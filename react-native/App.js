@@ -1,14 +1,53 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { SimpleApp } from 'react-navigation';
+import { 
+	View, 
+	StyleSheet, 
+	Button, 
+	Alert, 
+	TouchableOpacity, 
+	Text, 
+	TextInput, 
+	ScrollView, 
+	AsyncStorage,
+	NativeEventEmitter, 
+	NativeModules,
+ } from 'react-native';
+import { 
+	Navigator,
+	StatusBar
+ } from 'react-native-deprecated-custom-components';
+import { purple, white } from './utils/colors'
+import { Constants } from 'expo'
+
+import Banner from './components/Banner'
+//import Live from './components/Live'
+import MyApp from './components/MyApp'
+import Geolocation from './components/Geolocation'
+import SwichExample from './components/SwichExample'
+
+
+const { StatusBarManager } = NativeModules;
+
+
+
 
 export default class App extends React.Component {
   render() {
     return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-        <Text>Changes you make will automatically reload.</Text>
-        <Text>Shake your phone to open the developer menu.</Text>
-      </View>
+    <ScrollView contentContainerStyle={styles.contentContainer}>
+		
+		<Bandeau 
+			barStyle="light-content" 
+			number_tokens={3}
+		/>
+		
+		
+		<Geolocation />
+		
+		
+		
+	</ScrollView>
     );
   }
 }
@@ -20,4 +59,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  contentContainer: {
+    paddingVertical: 20
+  },
+  statusBar: {
+    backgroundColor: "#C2185B",
+    height: Constants.statusBarHeight,
+  },
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
