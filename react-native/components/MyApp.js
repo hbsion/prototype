@@ -2,24 +2,24 @@ import React, { Component } from 'react'
 import MapView from 'react-native-maps';
 import { Marker } from 'react-native-maps';
 import { Callout } from 'react-native-maps';
-import { 
-    View, 
-    StyleSheet, 
-    Button, 
-    Alert, 
-    TouchableOpacity, 
-    Text, 
-    TextInput, 
-    ScrollView, 
+import {
+    View,
+    StyleSheet,
+    Button,
+    Alert,
+    TouchableOpacity,
+    Text,
+    TextInput,
+    ScrollView,
     AsyncStorage,
     Navigator,
     StatusBar
  } from 'react-native';
- 
+
 
 
 const data = {
-        
+
             region : {
                 latlng: {
                         latitude: 0,
@@ -30,7 +30,7 @@ const data = {
                     title : 'title',
                     description : 'description'
             },
-        
+
             me_marker : {
                 latlng: {
                     latitude: 37.785834,
@@ -41,7 +41,7 @@ const data = {
                 title : 'alex',
                 description : 'description'
             },
-        
+
             other_marker : [
             {
                 latlng: {
@@ -84,26 +84,26 @@ const data = {
                 description : 3,
             },
             ]
-        
+
         }
 
 
 export default class MyApp extends React.Component {
 
-    
-    
-    
+
+
+
     render() {
-    
+
     const { region, latitude, longitude } = this.props;
     console.log(this.props);
-    
 
-    
+
+
     var lat = this.props.latitude ? this.props.latitude : 0
     var longit = this.props.longitude ? this.props.longitude : 0
     console.log(lat, longit)
-    
+
 
     return (
       <View style ={styles.container}>
@@ -155,13 +155,3 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
   },
 });
-
-
-
-      
-      
-      
-      
-      
-
-

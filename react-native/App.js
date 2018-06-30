@@ -1,19 +1,19 @@
 import React from 'react';
 import { SimpleApp } from 'react-navigation';
-import { 
-    View, 
-    StyleSheet, 
-    Button, 
-    Alert, 
-    TouchableOpacity, 
-    Text, 
-    TextInput, 
-    ScrollView, 
+import {
+    View,
+    StyleSheet,
+    Button,
+    Alert,
+    TouchableOpacity,
+    Text,
+    TextInput,
+    ScrollView,
     AsyncStorage,
-    NativeEventEmitter, 
+    NativeEventEmitter,
     NativeModules,
  } from 'react-native';
-import { 
+import {
     Navigator,
     StatusBar
  } from 'react-native-deprecated-custom-components';
@@ -36,8 +36,8 @@ export default class App extends React.Component {
   render() {
     return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Banner 
-            barStyle="lightContent" 
+        <Banner
+            barStyle="lightContent"
             number_tokens={3}
         />
         <Geolocation />
@@ -61,19 +61,3 @@ const styles = StyleSheet.create({
     height: Constants.statusBarHeight,
   },
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
