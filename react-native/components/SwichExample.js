@@ -35,15 +35,12 @@ class SwichExample extends Component {
             <Text style = {styles.boldText}>
                Initial position:
             </Text>
-				
             <Text>
                {this.state.initialPosition}
             </Text>
-
             <Text style = {styles.boldText}>
                Current position:
             </Text>
-				
             <Text>
                {this.state.lastPosition}
             </Text>

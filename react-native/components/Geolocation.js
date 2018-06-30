@@ -44,21 +44,21 @@ class Geolocation extends Component {
         {this.state.error ? <Text>Error: {this.state.error}</Text> : null}
         
         
-		</View>
-		
-		<View>
-		
-		<MyApp 
-      		latitude={this.state.latitude}
-      		longitude={this.state.longitude}
-      	/>
+        </View>
+        
+        <View>
+        
+        <MyApp 
+            latitude={this.state.latitude}
+            longitude={this.state.longitude}
+        />
       
-      	</View>
+        </View>
       
       </View>
       
       
-      	
+        
       
       
       
