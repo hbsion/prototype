@@ -27,26 +27,19 @@ export default class Banner extends Component {
     return (
       	
     <View style={styles.bandeau}>
-      		
       	<View>
 			<StatusBar translucent backgroundColor={purple} {...this.props} />
 		</View>
-    	
-    	
     	<View style={styles.title}>
-    	
 			<Icon
 				name='sc-telegram'
 				type='evilicon'
 				color='blue'
 			/>
-		
 			<Text style={styles.messageBoxTitleText}>
 				{this.props.number_tokens} tokens
 			</Text>
-    	
     	</View>
-    	
 	</View>
 
     );

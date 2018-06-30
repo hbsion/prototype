@@ -1,21 +1,21 @@
 import React from 'react';
 import { SimpleApp } from 'react-navigation';
 import { 
-	View, 
-	StyleSheet, 
-	Button, 
-	Alert, 
-	TouchableOpacity, 
-	Text, 
-	TextInput, 
-	ScrollView, 
-	AsyncStorage,
-	NativeEventEmitter, 
-	NativeModules,
+    View, 
+    StyleSheet, 
+    Button, 
+    Alert, 
+    TouchableOpacity, 
+    Text, 
+    TextInput, 
+    ScrollView, 
+    AsyncStorage,
+    NativeEventEmitter, 
+    NativeModules,
  } from 'react-native';
 import { 
-	Navigator,
-	StatusBar
+    Navigator,
+    StatusBar
  } from 'react-native-deprecated-custom-components';
 import { purple, white } from './utils/colors'
 import { Constants } from 'expo'
@@ -36,18 +36,12 @@ export default class App extends React.Component {
   render() {
     return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
-		
-		<Bandeau 
-			barStyle="light-content" 
-			number_tokens={3}
-		/>
-		
-		
-		<Geolocation />
-		
-		
-		
-	</ScrollView>
+        <Banner 
+            barStyle="lightContent" 
+            number_tokens={3}
+        />
+        <Geolocation />
+    </ScrollView>
     );
   }
 }
