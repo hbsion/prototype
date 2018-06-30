@@ -1,54 +1,47 @@
-import React, { Component } from 'react';
-import { 
-	View, 
-	StyleSheet, 
-	Button, 
-	Alert, 
-	TouchableOpacity, 
-	Text, 
-	TextInput, 
-	ScrollView, 
-	AsyncStorage,
-	Navigator,
-	StatusBar
- } from 'react-native';
+import PropTypes from 'prop-types'
+import React from 'react'
+import {
+  View,
+  StyleSheet,
+  Text,
+  StatusBar
+} from 'react-native'
 import { Icon } from 'react-native-elements'
-import { purple, white } from '../utils/colors'
-import { Constants, Location, Permissions } from 'expo'
+import { purple } from '../utils/colors'
 
 
-export default class Banner extends Component {
-	
-  	
+export default class Banner extends React.Component {
+  static propTypes = {
+    nbOfTokens: PropTypes.number.isRequired,
+  }
+  static defaultProps = {
+    nbOfTokens: 0,
+  }
   render() {
-  
-	const { number_tokens } = this.props
-  
+    const { nbOfTokens } = this.props
     return (
-      	
-    <View style={styles.bandeau}>
-      	<View>
-			<StatusBar translucent backgroundColor={purple} {...this.props} />
-		</View>
-    	<View style={styles.title}>
-			<Icon
-				name='sc-telegram'
-				type='evilicon'
-				color='blue'
-			/>
-			<Text style={styles.messageBoxTitleText}>
-				{this.props.number_tokens} tokens
-			</Text>
-    	</View>
-	</View>
-
-    );
+      <View style={styles.bandeau}>
+        <View>
+          <StatusBar translucent backgroundColor={purple} {...this.props} />
+        </View>
+        <View style={styles.title}>
+          <Icon
+            name='sc-telegram'
+            type='evilicon'
+            color='blue'
+          />
+          <Text style={styles.messageBoxTitleText}>
+            {nbOfTokens} ZYMs
+          </Text>
+        </View>
+      </View>
+    )
   }
 }
 
 const styles = StyleSheet.create({
   bandeau: {
-  	flex : 1,
+    flex : 1,
     marginTop: 10,
     padding: 10,
     backgroundColor: '#87CEFA',
@@ -56,32 +49,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   title: {
-  	justifyContent: 'center',
-  	flexDirection: 'row'
+    justifyContent: 'center',
+    flexDirection: 'row'
   },
   messageBoxTitleText:{
-        fontWeight:'bold',
-        color:'#fff',
-        fontSize:20,
-        height : 20
-    },
-  
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    fontWeight:'bold',
+    color:'#fff',
+    fontSize:20,
+    height : 20
+  },
+})

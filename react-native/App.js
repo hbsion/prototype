@@ -1,3 +1,4 @@
+import Meteor from "react-native-meteor"
 import React from 'react';
 import { SimpleApp } from 'react-navigation';
 import {
@@ -13,14 +14,10 @@ import {
     NativeEventEmitter,
     NativeModules,
  } from 'react-native';
-import {
-    Navigator,
-    StatusBar
- } from 'react-native-deprecated-custom-components';
 import { purple, white } from './utils/colors'
 import { Constants } from 'expo'
 
-import Banner from './components/Banner'
+import BannerContainer from './components/BannerContainer'
 //import Live from './components/Live'
 import MyApp from './components/MyApp'
 import Geolocation from './components/Geolocation'
@@ -29,20 +26,19 @@ import SwichExample from './components/SwichExample'
 
 const { StatusBarManager } = NativeModules;
 
-
+// adb reverse tcp:3000 tcp:3000 is needed with the emulator
+const ipaddr = 'localhost'
+Meteor.connect(`ws://${ipaddr}:3000/websocket`)
 
 
 export default class App extends React.Component {
   render() {
     return (
-    <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Banner
-            barStyle="lightContent"
-            number_tokens={3}
-        />
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        <BannerContainer />
         <Geolocation />
-    </ScrollView>
-    );
+      </ScrollView>
+    )
   }
 }
 
