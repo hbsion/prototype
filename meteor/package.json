@@ -2,12 +2,13 @@
   "name": "enzym-prototype-meteor",
   "private": true,
   "scripts": {
-    "start": "meteor run",
+    "start": "meteor run --settings settings.json --port 4000 ; adb reverse tcp:4000 tcp:4000",
     "test": "meteor test --once --driver-package meteortesting:mocha"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0-beta.42",
     "meteor-node-stubs": "^0.3.2",
+    "simpl-schema": "^1.5.0",
     "yarn": "^1.7.0"
   },
   "devDependencies": {
