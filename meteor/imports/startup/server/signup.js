@@ -4,29 +4,27 @@ import {Mongo}  from 'meteor/mongo'
 import {onUserCreate} from '/imports/api/users/server/userHooks'
 import './passwordless-config'
 
-const landingPage = DDP.connect(Meteor.settings.landingPageUri)
+const {uri, username, password} = Meteor.settings.landingPageDdp
+const landingPage = DDP.connect(uri)
+DDP.onReconnect(connection => {
+  connection.call('login', {user: {username}, password}, (err, res) => {
+    console.log(err)
+    console.log(res)
+  })
+})
+
 
 const Users     = new Mongo.Collection('users',     {connection: landingPage})
 const Referrers = new Mongo.Collection('referrers', {connection: landingPage})
 
 onUserCreate('getRemoteAccount', (_id, user) => {
   const email = user.emails[0].address
-  const handle = landingPage.subscribe('referrers.getForPrototype', email, {onReady: () => {
-    console.log("ready", email)
-    const user = Users.findOne({})
-    if(!user) {
-      handle.stop()
-      return
-    }
-    const referrer = Referrers.findOne({userId: user._id})
+  const handle = landingPage.call('referrers.getForPrototype', {email}, (err, userData) => {
+    console.log(err)
+    if(!userData) return
+    const {landingPageUserId, username, ethAddress, referringToken} = userData
     Meteor.users.update(_id, {
-      $set: {
-        landingPageUserId: user._id,
-        username:          user.username,
-        ethAddress:        referrer.ethAddress,
-        referringToken:    referrer.token,
-      }
+      $set: {landingPageUserId, username, ethAddress, referringToken}
     })
-    handle.stop()
-  }})
+  })
 })
