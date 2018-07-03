@@ -8,14 +8,24 @@ import SignIn from './modules/login/ui/SignIn'
 const ipaddr = 'localhost'
 Meteor.connect(`ws://${ipaddr}:4000/websocket`)
 
-@withTracker(() => ({user: Meteor.user(), connected: Meteor.status().connected}))
-export default class App extends React.Component {
+@withTracker(() => ({
+  connected: Meteor.status().connected,
+  user:      Meteor.user(),
+}))
+export default class App extends React.PureComponent {
   static propTypes = {
     user: PropTypes.object,
   }
   render() {
     const {user, connected} = this.props
-    console.log('connected', connected)
+    console.warn('connected', connected)
+    if(!connected) {
+      return (
+        <View style={styles.container}>
+          <Text>Disconnectd</Text>
+        </View>
+      )
+    }
     if(!user) {
       return <SignIn />
     }

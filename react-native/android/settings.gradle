@@ -1,0 +1,3 @@
+rootProject.name = 'enzym_proto'
+
+include ':app'

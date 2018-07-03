@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "start": "meteor run --settings settings.json --port 4000 ; adb reverse tcp:4000 tcp:4000",
-    "test": "meteor test --once --driver-package meteortesting:mocha"
+    "test": "meteor test --once --driver-package meteortesting:mocha",
+    "deploy-preprod": "DEPLOY_HOSTNAME=us-east-1.galaxy.meteor.com meteor deploy preprod-proto.enzym.io --settings ./settings-preprod.json ; date"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0-beta.42",
