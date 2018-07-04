@@ -1,42 +1,41 @@
-import Meteor from "react-native-meteor"
-import React from 'react';
-import { SimpleApp } from 'react-navigation';
-import {
-    View,
-    StyleSheet,
-    Button,
-    Alert,
-    TouchableOpacity,
-    Text,
-    TextInput,
-    ScrollView,
-    AsyncStorage,
-    NativeEventEmitter,
-    NativeModules,
- } from 'react-native';
-import { purple, white } from './utils/colors'
-import { Constants } from 'expo'
+import PropTypes from 'prop-types'
+import React from 'react'
+import Meteor, {withTracker} from 'react-native-meteor'
+import { StyleSheet, Text, View, ScrollView, Button } from 'react-native'
 
 import BannerContainer from './components/BannerContainer'
-//import Live from './components/Live'
-import MyApp from './components/MyApp'
-import Geolocation from './components/Geolocation'
-import SwichExample from './components/SwichExample'
+import Geolocation     from './components/Geolocation'
+import SignIn          from './modules/login/ui/SignIn'
 
-
-const { StatusBarManager } = NativeModules;
-
-// adb reverse tcp:3000 tcp:3000 is needed with the emulator
 const ipaddr = 'localhost'
-Meteor.connect(`ws://${ipaddr}:3000/websocket`)
+Meteor.connect(`ws://${ipaddr}:4000/websocket`)
 
-
-export default class App extends React.Component {
+@withTracker(() => ({
+  connected: Meteor.status().connected,
+  user:      Meteor.user(),
+}))
+export default class App extends React.PureComponent {
+  static propTypes = {
+    user: PropTypes.object,
+  }
   render() {
+    const {user, connected} = this.props
+    console.warn('connected', connected, user)
+    if(!connected) {
+      return (
+        <View style={styles.container}>
+          <Text>Disconnected</Text>
+        </View>
+      )
+    }
+    if(!user) {
+      return <SignIn />
+    }
     return (
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <BannerContainer />
         <Geolocation />
+        <Button title="logout" onPress={() => Meteor.logout()}>logout</Button>
       </ScrollView>
     )
   }
@@ -54,6 +53,6 @@ const styles = StyleSheet.create({
   },
   statusBar: {
     backgroundColor: "#C2185B",
-    height: Constants.statusBarHeight,
+    height:  "50px",
   },
 });

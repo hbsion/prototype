@@ -81,16 +81,17 @@ export default class MyApp extends React.Component {
   }
   render() {
     const { latitude, longitude } = this.props
+    const region = latitude && longitude && {
+      latitude,
+      longitude,
+      latitudeDelta: 0.015,
+      longitudeDelta: 0.0121,
+    }
     return (
       <View style ={styles.container}>
         <MapView
           style={styles.map}
-          region={{
-            latitude,
-            longitude,
-            latitudeDelta: 0.015,
-            longitudeDelta: 0.0121,
-          }}
+          region={region}
         >
           <Marker draggable
             coordinate={data.me_marker.latlng}
@@ -119,7 +120,7 @@ export default class MyApp extends React.Component {
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    height: 400,
+    flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
     margin : 10,
