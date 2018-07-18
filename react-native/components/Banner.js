@@ -20,7 +20,7 @@ export default class Banner extends React.Component {
   render() {
     const { nbOfTokens } = this.props
     return (
-      <View style={styles.bandeau}>
+      <View style={styles.banner}>
         <View>
           <StatusBar translucent backgroundColor={purple} {...this.props} />
         </View>
@@ -40,8 +40,7 @@ export default class Banner extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  bandeau: {
-    flex : 1,
+  banner: {
     marginTop: 10,
     padding: 10,
     backgroundColor: '#87CEFA',

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Alert, View, StyleSheet, Text, PermissionsAndroid } from 'react-native'
-import MyApp from './MyApp'
+import MainMap from './MainMap'
 
 
 export default class Geolocation extends Component {
@@ -16,24 +16,24 @@ export default class Geolocation extends Component {
     this.requestGeolocationPermission()
   }
   render() {
+    const { error, latitude, longitude } = this.state
     return (
       <View style={styles.container}>
         <View>
-          <Text>Latitude: {this.state.latitude}</Text>
-          <Text>Longitude: {this.state.longitude}</Text>
-          {this.state.error ? <Text>Error: {this.state.error}</Text> : null}
+          <Text>Latitude: {latitude}</Text>
+          <Text>Longitude: {longitude}</Text>
+          {error ? <Text>Error: {error}</Text> : null}
         </View>
-        <View>
-          <MyApp
-            latitude={this.state.latitude}
-            longitude={this.state.longitude}
+        {latitude && longitude &&
+          <MainMap
+            latitude={latitude}
+            longitude={longitude}
           />
-        </View>
+        }
       </View>
     )
   }
   requestGeolocationPermission = async () => {
-    console.warn("request")
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -43,13 +43,10 @@ export default class Geolocation extends Component {
                      'so you can take awesome pictures.'
         }
       )
-      console.warn(granted)
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.warn("You can use the camera")
         this.getPosition()
 
       } else {
-        console.warn("Camera permission denied")
         Alert.alert("Permission not granted. The application may not work properly")
       }
     } catch (err) {

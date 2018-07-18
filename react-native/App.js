@@ -20,7 +20,7 @@ export default class App extends React.PureComponent {
   }
   render() {
     const {user, connected} = this.props
-    console.warn('connected', connected, user)
+    //console.warn('connected', connected, user)
     if(!connected) {
       return (
         <View style={styles.container}>
@@ -32,11 +32,11 @@ export default class App extends React.PureComponent {
       return <SignIn />
     }
     return (
-      <ScrollView contentContainerStyle={styles.contentContainer}>
+      <View style={{flex: 1}}>
         <BannerContainer />
         <Geolocation />
         <Button title="logout" onPress={() => Meteor.logout()}>logout</Button>
-      </ScrollView>
+      </View>
     )
   }
 }
@@ -55,4 +55,4 @@ const styles = StyleSheet.create({
     backgroundColor: "#C2185B",
     height:  "50px",
   },
-});
+})

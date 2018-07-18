@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "react-native start",
-    "android": "react-native run-android",
+    "android": "react-native run-android && adb reverse tcp:4000 tcp:4000",
     "ios": "react-native run-ios",
     "test": "jest"
   },
@@ -25,6 +25,7 @@
     "react-native": "0.54.4",
     "react-native-deprecated-custom-components": "^0.1.2",
     "react-native-elements": "^0.19.1",
+    "react-native-map-clustering": "^1.3.0",
     "react-native-maps": "0.21.0",
     "react-native-meteor": "^1.3.0",
     "react-native-scripts": "^1.14.0",
