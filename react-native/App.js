@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Meteor, {withTracker} from 'react-native-meteor'
-import { StyleSheet, Text, View, Button } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Button } from 'react-native'
 
-import SignIn from './modules/login/ui/SignIn'
+import BannerContainer from './components/BannerContainer'
+import Geolocation     from './components/Geolocation'
+import SignIn          from './modules/login/ui/SignIn'
 
 const ipaddr = 'localhost'
 Meteor.connect(`ws://${ipaddr}:4000/websocket`)
@@ -18,11 +20,11 @@ export default class App extends React.PureComponent {
   }
   render() {
     const {user, connected} = this.props
-    console.warn('connected', connected)
+    //console.warn('connected', connected, user)
     if(!connected) {
       return (
         <View style={styles.container}>
-          <Text>Disconnectd</Text>
+          <Text>Disconnected</Text>
         </View>
       )
     }
@@ -30,12 +32,9 @@ export default class App extends React.PureComponent {
       return <SignIn />
     }
     return (
-      <View style={styles.container}>
-        <View style={styles.container}>
-          <Text>Open up App.js to start working on your app!</Text>
-          <Text>Changes you make will automatically reload.</Text>
-          <Text>Shake your phone to open the developer menu.</Text>
-        </View>
+      <View style={{flex: 1}}>
+        <BannerContainer />
+        <Geolocation />
         <Button title="logout" onPress={() => Meteor.logout()}>logout</Button>
       </View>
     )
@@ -48,5 +47,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  contentContainer: {
+    paddingVertical: 20
+  },
+  statusBar: {
+    backgroundColor: "#C2185B",
+    height:  "50px",
   },
 })
