@@ -1,43 +1,73 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import PropTypes             from 'prop-types'
+import React                 from 'react'
+import Config                from 'react-native-config'
 import Meteor, {withTracker} from 'react-native-meteor'
-import { StyleSheet, Text, View, Button } from 'react-native'
-import Config from 'react-native-config'
+import { StyleSheet, View } from 'react-native'
+import { NativeRouter, Route, Switch, Redirect, Link, withRouter } from 'react-router-native'
 
-import BannerContainer from './components/BannerContainer'
-import Geolocation     from './components/Geolocation'
-import SignIn          from './modules/login/ui/SignIn'
+import Disconnected      from './components/Disconnected'
+import Home              from './components/Home'
+import Loading           from './components/Loading'
+import InsideVenue       from './modules/insideVenue/InsideVenue'
+import PlayerProfile     from './modules/insideVenue/PlayerProfile'
+import SignIn            from './modules/login/ui/SignIn'
 
 Meteor.connect(`ws://${Config.SERVER_URL}/websocket`)
 
-@withTracker(() => ({
-  connected: Meteor.status().connected,
-  user:      Meteor.user(),
-}))
+@withTracker(() => {
+  const user = Meteor.user()
+  Meteor.subscribe('players.one')
+  const player = !user ? {} : Meteor.collection('players').findOne({userId: user._id})
+  console.log("refresh")
+  return {
+    connected: Meteor.status().connected,
+    user,
+    player,
+  }
+})
 export default class App extends React.PureComponent {
   static propTypes = {
-    user: PropTypes.object,
+    connected: PropTypes.bool.isRequired,
+    player:    PropTypes.object,
+    user:      PropTypes.object,
   }
   render() {
-    const {user, connected} = this.props
-    //console.warn('connected', connected, user)
+    const {connected, player, user} = this.props
+    console.log(player, user)
     if(!connected) {
-      return (
-        <View style={styles.container}>
-          <Text>Disconnected</Text>
-        </View>
-      )
+      return <Disconnected {...{connected}} />
     }
     if(!user) {
       return <SignIn />
     }
+    if(!player) {
+      return <Loading />
+    }
+    if(!player.venueOsmId) {
+      return <Home {...{player}} />
+    }
     return (
-      <View style={{flex: 1}}>
-        <BannerContainer />
-        <Geolocation />
-        <Button title="logout" onPress={() => Meteor.logout()}>logout</Button>
-      </View>
+      <NativeRouter>
+        <Switch>
+          <Route path="/player/:playerId"      component={PlayerProfile} />
+          {/*<Route path="/player/:playerId/chat" component={Chat} />*/}
+          {!!player.venueOsmId &&
+            <Route render={() => <InsideVenue venueOsmId={player.venueOsmId} />} />
+          }
+        </Switch>
+      </NativeRouter>
     )
+  }
+}
+
+
+
+function loginRequired(Component) {
+  return function(...props) {
+    return withRouter(function(authProps) {
+      console.log(authProps)
+      return <Component {...props} />
+    })
   }
 }
 
@@ -47,12 +77,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  contentContainer: {
-    paddingVertical: 20
-  },
-  statusBar: {
-    backgroundColor: "#C2185B",
-    height:  "50px",
+    width: '100%'
   },
 })

@@ -1,6 +1,7 @@
 import PropTypes    from 'prop-types'
 import React        from 'react'
 import {View, StyleSheet, FlatList, Text, TouchableOpacity, Button, Alert} from 'react-native'
+import { Link } from 'react-router-native'
 
 export default class PlayerList extends React.Component {
   static propTypes = {
@@ -40,26 +41,16 @@ export default class PlayerList extends React.Component {
     )
   }
   _keyExtractor = (item) => item._id
-  _onPressItem = (id: string) => {
-    // updater functions are preferred for transactional updates
-    console.log(id)
-  }
-
 }
 
 class MyListItem extends React.PureComponent {
-  _onPress = () => {
-    this.props.onPressItem(this.props.id);
-  };
-
   render() {
+    const {id, title} = this.props
     return (
       <View style={styles.item}>
-        <TouchableOpacity onPress={this._onPress}>
+        <TouchableOpacity>
           <View>
-            <Text>
-              {this.props.title}
-            </Text>
+            <Link to={`/player/${id}`}><Text>{title}</Text></Link>
           </View>
         </TouchableOpacity>
       </View>
