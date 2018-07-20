@@ -1,31 +1,12 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import Mapbox       from '@mapbox/react-native-mapbox-gl'
 import osmtogeojson from 'osmtogeojson'
-import Mapbox from '@mapbox/react-native-mapbox-gl'
-import {View, StyleSheet, Text, AsyncStorage, Button, Alert} from 'react-native'
-import { Cache } from "react-native-cache"
-import Config from 'react-native-config'
+import PropTypes    from 'prop-types'
+import React        from 'react'
+import {View, StyleSheet, Text, Button, Alert} from 'react-native'
+import Config       from 'react-native-config'
+import Meteor       from 'react-native-meteor'
 
-const cache = new Cache({
-  namespace: "venues",
-  policy: {
-    //maxEntries: 100,
-  },
-  backend: AsyncStorage,
-})
-const promisify = (func, parent) => (...args) => new Promise((resolve, reject) => {
-  func.bind(parent)(...args, function(err, res) {
-    if(err) return reject(err)
-    resolve(res)
-  })
-})
-
-cache.setItem = promisify(cache.setItem, cache)
-cache.getItem = promisify(cache.getItem, cache)
-cache.removeItem = promisify(cache.removeItem, cache)
-cache.peekItem = promisify(cache.peekItem, cache)
-cache.getAll = promisify(cache.getAll, cache)
-cache.clearAll = promisify(cache.clearAll, cache)
+import venuesCache from '/modules/cache/venues'
 
 Mapbox.setAccessToken(Config.MAPBOX_KEY)
 
@@ -104,7 +85,7 @@ const cities = citiesCsv.split('\n').map(line => line.split('\t'))
     "type": "FeatureCollection",
     "features": []}
   )
-console.log(cities)
+//console.log(cities)
 
 const players = {
   "type": "FeatureCollection",
@@ -130,7 +111,7 @@ const players = {
     })
   )
 }
-console.log(players)
+//console.log(players)
 
 const layerStyles = Mapbox.StyleSheet.create({
   playerSinglePoint: {
@@ -209,91 +190,97 @@ export default class MainMap extends React.Component {
     }
     return (
       <View style={styles.container}>
-        <Mapbox.MapView
-          ref={ref => this.mapView = ref}
-          styleURL={Mapbox.StyleURL.Street}
-          zoomLevel={15}
-          centerCoordinate={latLngToArray(region)}
-          showUserLocation={true}
-          onRegionDidChange={this.handleRegionDidChange}
-          style={styles.container}>
+        <View style={{flex: 0.1}}>
+          <Text>Latitude: {latitude}</Text>
+          <Text>Longitude: {longitude}</Text>
+        </View>
+        <View style={{flex: 0.9}}>
+          <Mapbox.MapView
+            ref={ref => this.mapView = ref}
+            styleURL={Mapbox.StyleURL.Street}
+            zoomLevel={15}
+            centerCoordinate={latLngToArray(region)}
+            showUserLocation={true}
+            onRegionDidChange={this.handleRegionDidChange}
+            style={styles.container}>
 
-          <Mapbox.PointAnnotation
-            key='pointAnnotation'
-            id='pointAnnotation'
-            coordinate={[4.75418, 44.56044]}>
-
-            <View style={styles.annotationContainer}>
-              <View style={styles.annotationFill}><Text>8</Text></View>
-            </View>
-            <Mapbox.Callout title='Look! An annotation!' />
-          </Mapbox.PointAnnotation>
-
-
-          <Mapbox.ShapeSource
-            id="cities"
-            shape={cities}>
-            <Mapbox.CircleLayer
-              id="citiesPoints"
-              style={layerStyles.clusteredPoints}
-            />
-          </Mapbox.ShapeSource>
-
-          <Mapbox.ShapeSource
-            id="players"
-            cluster
-            clusterRadius={50}
-            clusterMaxZoom={14}
-            shape={players}>
-            <Mapbox.SymbolLayer
-              id="playerPointCount"
-              style={layerStyles.clusterCount}
-            />
-
-            <Mapbox.CircleLayer
-              id="playerClusteredPoints"
-              belowLayerID="playerPointCount"
-              filter={['has', 'point_count']}
-              style={layerStyles.clusteredPoints}
-            />
-
-            <Mapbox.CircleLayer
-              id="playerSinglePoint"
-              belowLayerID="playerClusteredPoints"
-              filter={['!has', 'point_count']}
-              style={layerStyles.playerSinglePoint}
-            />
-          </Mapbox.ShapeSource>
-
-          {venues && venues.features.length < 50 && venues.features.map((feature, idx) => (
             <Mapbox.PointAnnotation
-              key={`city-${idx}`}
-              id={`city-${idx}`}
-              coordinate={feature.geometry.coordinates}>
+              key='pointAnnotation'
+              id='pointAnnotation'
+              coordinate={[4.75418, 44.56044]}>
 
               <View style={styles.annotationContainer}>
-                <View style={styles.annotationFill} />
+                <View style={styles.annotationFill}><Text>8</Text></View>
               </View>
-              <Mapbox.Callout title={feature.properties.name}>
-                <View>
-                  <Text>test</Text>
-                  <Button title="enter" onPress={this.enterVenue(feature.properties.name)}>enter</Button>
-                </View>
-              </Mapbox.Callout>
+              <Mapbox.Callout title='Look! An annotation!' />
             </Mapbox.PointAnnotation>
-          ))}
-          {venues &&
+
+
             <Mapbox.ShapeSource
-              id="venues"
-              shape={venues}>
+              id="cities"
+              shape={cities}>
               <Mapbox.CircleLayer
-                id="venuesPoints"
-                belowLayerID="playerSinglePoint"
-                style={layerStyles.singlePoint}
+                id="citiesPoints"
+                style={layerStyles.clusteredPoints}
               />
             </Mapbox.ShapeSource>
-          }
-        </Mapbox.MapView>
+
+            <Mapbox.ShapeSource
+              id="players"
+              cluster
+              clusterRadius={50}
+              clusterMaxZoom={14}
+              shape={players}>
+              <Mapbox.SymbolLayer
+                id="playerPointCount"
+                style={layerStyles.clusterCount}
+              />
+
+              <Mapbox.CircleLayer
+                id="playerClusteredPoints"
+                belowLayerID="playerPointCount"
+                filter={['has', 'point_count']}
+                style={layerStyles.clusteredPoints}
+              />
+
+              <Mapbox.CircleLayer
+                id="playerSinglePoint"
+                belowLayerID="playerClusteredPoints"
+                filter={['!has', 'point_count']}
+                style={layerStyles.playerSinglePoint}
+              />
+            </Mapbox.ShapeSource>
+
+            {venues && venues.features.length < 20 && venues.features.map((feature, idx) => (
+              <Mapbox.PointAnnotation
+                key={`city-${idx}`}
+                id={`city-${idx}`}
+                coordinate={feature.geometry.coordinates}>
+
+                <View style={styles.annotationContainer}>
+                  <View style={styles.annotationFill} />
+                </View>
+                <Mapbox.Callout title={feature.properties.name}>
+                  <View>
+                    <Text>test</Text>
+                    <Button title="enter" onPress={this.enterVenue(feature)}>enter</Button>
+                  </View>
+                </Mapbox.Callout>
+              </Mapbox.PointAnnotation>
+            ))}
+            {venues &&
+              <Mapbox.ShapeSource
+                id="venues"
+                shape={venues}>
+                <Mapbox.CircleLayer
+                  id="venuesPoints"
+                  belowLayerID="playerSinglePoint"
+                  style={layerStyles.singlePoint}
+                />
+              </Mapbox.ShapeSource>
+            }
+          </Mapbox.MapView>
+        </View>
       </View>
     )
   }
@@ -314,8 +301,8 @@ export default class MainMap extends React.Component {
   }
   getData = async (cityName, s, w, n, e) => {
     console.log(cityName)
-    if(!(await cache.getItem(cityName))) {
-      cache.setItem(cityName, {loading: true, data: {}})
+    if(!(await venuesCache.getItem(cityName))) {
+      venuesCache.setItem(cityName, {loading: true, data: {}})
       const TYPES = ['node', 'way', 'relation']
       const amenities = ['pub', 'bar', 'cafe', 'restaurant', 'fast_food']
       const baseUrl = 'http://overpass-api.de/api/interpreter?data='
@@ -331,9 +318,9 @@ export default class MainMap extends React.Component {
           .then(res => res.json())
           .catch(error => console.error(error))
       )
-      await cache.setItem(cityName, {loading: false, data})
+      await venuesCache.setItem(cityName, {loading: false, data})
     }
-    const venues = await cache.getItem(cityName)
+    const venues = await venuesCache.getItem(cityName)
     if(venues.loading) return
     console.log(venues.data.elements.length)
     const osmObj = {
@@ -343,8 +330,17 @@ export default class MainMap extends React.Component {
     console.log(osmObj.elements.length)
     this.setState({venues: osmtogeojson(osmObj)})
   }
-  enterVenue = (name) => () => {
-    Alert.alert(`entering ${name}`)
+  enterVenue = (venue) => () => {
+    const id = venue.id.split('/')[1]
+    Meteor.call('players.enterInsideVenue', {venueOsmId: id}, (err, res) => {
+      if(err) {
+        console.log(err)
+      } else {
+        console.log("res", res)
+        console.log(id)
+        venuesCache.setItem(id, venue)
+      }
+    })
   }
 }
 

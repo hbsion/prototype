@@ -1,7 +1,14 @@
 {
   "presets": [
-    "babel-preset-react-native-stage-0/decorator-support",
     "babel-preset-react-native-stage-0/decorator-support"
+  ],
+  "plugins": [
+    ["module-resolver", {
+      "root": ["."],
+      "alias": {
+        "modules": "./src/modules"
+      }
+    }]
   ],
   "env": {
     "development": {

@@ -1,36 +1,33 @@
-import React, { Component } from 'react'
-import { Alert, View, StyleSheet, Text, PermissionsAndroid } from 'react-native'
+import PropTypes                     from 'prop-types'
+import React, { Component }          from 'react'
+import { Alert, PermissionsAndroid } from 'react-native'
 import MainMap from './MainMap'
 
 
-export default class Geolocation extends Component {
+export default class MainMapContainer extends Component {
+  static propTypes = {
+    player: PropTypes.object,
+  }
   constructor(props) {
     super(props)
     this.state = {
-      latitude: null,
+      error:     null,
+      latitude:  null,
       longitude: null,
-      error: null,
     }
   }
   componentDidMount() {
     this.requestGeolocationPermission()
   }
   render() {
-    const { error, latitude, longitude } = this.state
+    const { player } = this.props
+    const { latitude, longitude } = this.state
     return (
-      <View style={styles.container}>
-        <View style={{flex: 0.1}}>
-          <Text>Latitude: {latitude}</Text>
-          <Text>Longitude: {longitude}</Text>
-          {error ? <Text>Error: {error}</Text> : null}
-        </View>
-        <View style={{flex: 0.9}}>
-          <MainMap
-            latitude={latitude}
-            longitude={longitude}
-          />
-        </View>
-      </View>
+      <MainMap
+        latitude={latitude}
+        longitude={longitude}
+        playerId={player._id}
+      />
     )
   }
   requestGeolocationPermission = async () => {
@@ -42,7 +39,6 @@ export default class Geolocation extends Component {
           'message': 'Nous autorises-tu à accéder à ta localisation ?'
         }
       )
-      console.warn(granted)
       if (granted === true || granted === PermissionsAndroid.RESULTS.GRANTED) {
         this.getPosition()
       } else {
@@ -69,10 +65,3 @@ export default class Geolocation extends Component {
     )
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-})

@@ -24,10 +24,6 @@ module.exports = {
             "warn",
             "unix"
         ],
-        "quotes": [
-            "warn",
-            "single"
-        ],
         "semi": [
             "warn",
             "never"

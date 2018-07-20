@@ -4,6 +4,3 @@ import './fixtures';
 import './register-api';
 
 import './signup'
-
-import {Random} from 'meteor/random'
-console.log(Random.id())
