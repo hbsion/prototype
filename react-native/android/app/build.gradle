@@ -150,10 +150,7 @@ dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:27.1.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
-    implementation(project(':react-native-maps')){
-        exclude group: 'com.google.android.gms', module: 'play-services-base'
-        exclude group: 'com.google.android.gms', module: 'play-services-maps'
-    }
+    compile project(':mapbox-react-native-mapbox-gl')
     implementation 'com.google.android.gms:play-services-base:15.0.1'
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
 }

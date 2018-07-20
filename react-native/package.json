@@ -20,13 +20,15 @@
     "preset": "react-native"
   },
   "dependencies": {
+    "@mapbox/react-native-mapbox-gl": "^6.1.2-beta2",
+    "osmtogeojson": "^3.0.0-beta.3",
     "prop-types": "^15.6.2",
     "react": "16.3.1",
     "react-native": "0.54.4",
+    "react-native-cache": "^1.1.1",
+    "react-native-config": "^0.11.5",
     "react-native-deprecated-custom-components": "^0.1.2",
     "react-native-elements": "^0.19.1",
-    "react-native-map-clustering": "^1.3.0",
-    "react-native-maps": "0.21.0",
     "react-native-meteor": "^1.3.0",
     "react-native-scripts": "^1.14.0",
     "react-native-vector-icons": "^4.6.0",

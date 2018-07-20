@@ -19,17 +19,19 @@ export default class Geolocation extends Component {
     const { error, latitude, longitude } = this.state
     return (
       <View style={styles.container}>
-        <View>
+        <View style={{flex: 0.1}}>
           <Text>Latitude: {latitude}</Text>
           <Text>Longitude: {longitude}</Text>
           {error ? <Text>Error: {error}</Text> : null}
         </View>
-        {latitude && longitude &&
-          <MainMap
-            latitude={latitude}
-            longitude={longitude}
-          />
-        }
+        <View style={{flex: 0.9}}>
+          {latitude && longitude &&
+            <MainMap
+              latitude={latitude}
+              longitude={longitude}
+            />
+          }
+        </View>
       </View>
     )
   }
@@ -75,7 +77,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 })
