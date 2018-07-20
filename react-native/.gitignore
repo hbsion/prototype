@@ -24,3 +24,6 @@ android/*.iml
 android/*/*.iml
 android/app/build
 android/build
+
+.env
+.env-production

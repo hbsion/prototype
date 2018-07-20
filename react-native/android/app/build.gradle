@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
 import groovy.swing.SwingBuilder
 import com.android.build.OutputFile
@@ -102,8 +103,8 @@ android {
         applicationId "com.enzym_proto"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "proto-0.2"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
@@ -111,9 +112,9 @@ android {
     signingConfigs {
         release {
             storeFile file(project.property("enzym.keystorePath"))
-            storePassword 'password'
-            keyAlias 'alias'
-            keyPassword 'password'
+            storePassword 'xxx'
+            keyAlias 'enzym_proto'
+            keyPassword 'xxx'
         }
     }
     splits {
@@ -146,7 +147,44 @@ android {
     }
 }
 
+gradle.taskGraph.whenReady { taskGraph ->
+  if(taskGraph.hasTask(':app:assembleRelease')) {
+    def storePassword = ''
+    def keyPassword = ''
+    if (System.console() == null) {
+        new SwingBuilder().edt {
+            dialog(modal: true, title: 'Enter password', alwaysOnTop: true, resizable: false, locationRelativeTo: null, pack: true, show: true) {
+                vbox {
+                    label(text: "Please enter store passphrase:")
+                    def input1 = passwordField()
+                    label(text: "Please enter key passphrase:")
+                    def input2 = passwordField()
+                    button(defaultButton: true, text: 'OK', actionPerformed: {
+                        storePassword = input1.password;
+                        keyPassword = input2.password;
+                        dispose();
+                    })
+                }
+            }
+        }
+    } else {
+        storePassword = System.console().readPassword("\nPlease enter store passphrase: ")
+        keyPassword = System.console().readPassword("\nPlease enter key passphrase: ")
+    }
+    if (storePassword.size() <= 0 || keyPassword.size() <= 0) {
+        throw new InvalidUserDataException("You must enter the passwords to proceed.")
+    }
+    storePassword = new String(storePassword)
+    keyPassword = new String(keyPassword)
+
+    android.signingConfigs.release.storePassword = storePassword
+    android.signingConfigs.release.keyPassword = keyPassword
+  }
+}
+
+
 dependencies {
+    compile project(':react-native-config')
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:27.1.1"
     compile "com.facebook.react:react-native:+"  // From node_modules

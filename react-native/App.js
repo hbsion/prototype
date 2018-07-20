@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Meteor, {withTracker} from 'react-native-meteor'
-import { StyleSheet, Text, View, ScrollView, Button } from 'react-native'
+import { StyleSheet, Text, View, Button } from 'react-native'
+import Config from 'react-native-config'
 
 import BannerContainer from './components/BannerContainer'
 import Geolocation     from './components/Geolocation'
 import SignIn          from './modules/login/ui/SignIn'
 
-const ipaddr = 'localhost'
-Meteor.connect(`ws://${ipaddr}:4000/websocket`)
+Meteor.connect(`ws://${Config.SERVER_URL}/websocket`)
 
 @withTracker(() => ({
   connected: Meteor.status().connected,

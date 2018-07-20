@@ -4,7 +4,7 @@ import osmtogeojson from 'osmtogeojson'
 import Mapbox from '@mapbox/react-native-mapbox-gl'
 import {View, StyleSheet, Text, AsyncStorage, Button, Alert} from 'react-native'
 import { Cache } from "react-native-cache"
-import {MAPBOX_KEY} from 'react-native-config'
+import Config from 'react-native-config'
 
 const cache = new Cache({
   namespace: "venues",
@@ -27,7 +27,7 @@ cache.peekItem = promisify(cache.peekItem, cache)
 cache.getAll = promisify(cache.getAll, cache)
 cache.clearAll = promisify(cache.clearAll, cache)
 
-Mapbox.setAccessToken(MAPBOX_KEY)
+Mapbox.setAccessToken(Config.MAPBOX_KEY)
 
 const citiesCsv = `
 node	9002746	Charleroi	50.4120332	4.4436244

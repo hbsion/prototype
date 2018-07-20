@@ -25,12 +25,10 @@ export default class Geolocation extends Component {
           {error ? <Text>Error: {error}</Text> : null}
         </View>
         <View style={{flex: 0.9}}>
-          {latitude && longitude &&
-            <MainMap
-              latitude={latitude}
-              longitude={longitude}
-            />
-          }
+          <MainMap
+            latitude={latitude}
+            longitude={longitude}
+          />
         </View>
       </View>
     )
@@ -40,14 +38,13 @@ export default class Geolocation extends Component {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
-          'title': 'Cool Photo App Camera Permission',
-          'message': 'Cool Photo App needs access to your camera ' +
-                     'so you can take awesome pictures.'
+          'title': "Autorisation d'accès à la localisation",
+          'message': 'Nous autorises-tu à accéder à ta localisation ?'
         }
       )
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.warn(granted)
+      if (granted === true || granted === PermissionsAndroid.RESULTS.GRANTED) {
         this.getPosition()
-
       } else {
         Alert.alert("Permission not granted. The application may not work properly")
       }
