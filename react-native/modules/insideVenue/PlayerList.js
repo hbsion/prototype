@@ -9,7 +9,6 @@ export default class PlayerList extends React.Component {
   }
   render() {
     const {players} = this.props
-    console.log(players)
     return (
       <View style={styles.container}>
         <FlatList
@@ -68,5 +67,7 @@ const styles = StyleSheet.create({
   },
   item: {
     flex: 0.2,
+    paddingTop: 20,
+    paddingBottom: 20,
   }
 })

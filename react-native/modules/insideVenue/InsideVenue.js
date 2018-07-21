@@ -13,7 +13,6 @@ import PlayerList from './PlayerList'
   console.log(venueOsmId)
   Meteor.subscribe('players.insideVenue', venueOsmId)
   const players = Meteor.collection('players').find({venueOsmId})
-  console.log("players", players)
   return {
     venueOsmId,
     players,
@@ -29,7 +28,6 @@ export default class InsideVenue extends React.Component {
     super(props)
     venuesCache.getItem(props.venueOsmId)
       .then(venue => {
-        console.log("venue", venue)
         if(!venue) {
           return this.leaveVenue()
         }
