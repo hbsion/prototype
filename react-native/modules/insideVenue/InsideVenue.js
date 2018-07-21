@@ -12,7 +12,8 @@ import PlayerList from './PlayerList'
   console.log("inside")
   console.log(venueOsmId)
   Meteor.subscribe('players.insideVenue', venueOsmId)
-  const players = Meteor.collection('players').find({venueOsmId})
+  const player  = Meteor.collection('players').findOne({userId: Meteor.userId()})
+  const players = Meteor.collection('players').find({venueOsmId, _id: {$ne: player._id}})
   return {
     venueOsmId,
     players,
@@ -51,7 +52,7 @@ export default class InsideVenue extends React.Component {
       <View style={styles.container}>
         <Text>{venue.properties.name} ({players.length})</Text>
         <PlayerList players={players} />
-        <Button title="logout" onPress={this.leaveVenue}>sortir</Button>
+        <Button title="sortir" onPress={this.leaveVenue} />
       </View>
     )
   }

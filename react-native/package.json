@@ -13,7 +13,7 @@
   "scripts": {
     "start": "react-native start",
     "android": "ENVFILE=.env react-native run-android && adb reverse tcp:4000 tcp:4000",
-    "android-release": "cd android && ENVFILE=.env-production ./gradlew assembleRelease ; cd ..",
+    "release-android": "cd android && ENVFILE=.env-production ./gradlew assembleRelease ; cd ..",
     "ios": "react-native run-ios",
     "test": "jest"
   },

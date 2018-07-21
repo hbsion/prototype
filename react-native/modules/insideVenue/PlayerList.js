@@ -23,7 +23,6 @@ export default class PlayerList extends React.Component {
   _renderItem = ({item}) => (
     <MyListItem
       id={item._id}
-      onPressItem={this._onPressItem}
       title={item._id}
     />
   )
