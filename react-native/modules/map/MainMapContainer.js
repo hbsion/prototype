@@ -2,12 +2,21 @@ import osmtogeojson                  from 'osmtogeojson'
 import PropTypes                     from 'prop-types'
 import React, { Component }          from 'react'
 import { Alert, PermissionsAndroid } from 'react-native'
-import Meteor                        from 'react-native-meteor'
+import Meteor, {withTracker}         from 'react-native-meteor'
 
 import venuesCache  from '/modules/cache/venues'
 import isInsideBbox from './isInsideBbox'
 import MainMap      from './MainMap'
 
+@withTracker((...props) => {
+  Meteor.subscribe('venues.count')
+  const venues = Meteor.collection('venues').find({})
+  console.log(venues)
+  return {
+    ...props,
+    venues,
+  }
+})
 export default class MainMapContainer extends Component {
   static propTypes = {
     player: PropTypes.object,
@@ -26,7 +35,25 @@ export default class MainMapContainer extends Component {
   }
   render() {
     const { player } = this.props
-    const { latitude, longitude, venues } = this.state
+    const { latitude, longitude } = this.state
+    const venues = !this.state.venues ? null : {
+      ...this.state.venues,
+      features: this.state.venues.features.map((feature) => {
+        console.log(feature.id)
+        const {count} = this.props.venues.find(({osmId}) => osmId === feature.id.split('/')[1]) || {}
+        if(count) {
+          console.log("count", count)
+          return {
+            ...feature,
+            properties: {
+              ...feature.properties,
+              count,
+            }
+          }
+        }
+        return feature
+      })
+    }
     return (
       <MainMap
         enterVenue={this.enterVenue}

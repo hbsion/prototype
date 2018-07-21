@@ -78,15 +78,23 @@ export default class MainMap extends React.Component {
                 style={layerStyles.playerSinglePoint}
               />
             </Mapbox.ShapeSource>
-            {venues && venues.features.length < 20 && venues.features.map((feature, idx) => (
+            {venues && venues.features.length <= 30 && venues.features.map((feature, idx) => (
               <Mapbox.PointAnnotation
                 key={`city-${idx}`}
                 id={`city-${idx}`}
                 coordinate={feature.geometry.coordinates}
               >
-                <View style={styles.annotationContainer}>
-                  <View style={styles.annotationFill} />
-                </View>
+                {feature.properties.count &&
+                  <View style={styles.annotationContainer}>
+                    <View style={styles.annotationFill2}>
+                      <Text style={styles.annotationText}>{feature.properties.count}</Text>
+                    </View>
+                  </View>
+                ||
+                  <View style={styles.annotationContainer}>
+                    <View style={styles.annotationFill} />
+                  </View>
+                }
                 <Mapbox.Callout title={feature.properties.name} style={styles.popup}>
                   <View>
                     <Text>{feature.properties.name}</Text>
@@ -95,7 +103,7 @@ export default class MainMap extends React.Component {
                 </Mapbox.Callout>
               </Mapbox.PointAnnotation>
             ))}
-            {venues &&
+            {venues && venues.features.length > 30 &&
               <Mapbox.ShapeSource
                 id="venues"
                 shape={venues}>
@@ -143,15 +151,20 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: 'orange',
+    backgroundColor: 'green',
     transform: [{ scale: 0.6 }],
   },
   annotationFill2: {
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: 'green',
+    backgroundColor: 'orange',
     transform: [{ scale: 0.6 }],
+  },
+  annotationText: {
+    fontSize: 24,
+    textAlign: 'center',
+    lineHeight: 30,
   },
   popup: {
     width: 150,
@@ -177,7 +190,6 @@ const layerStyles = Mapbox.StyleSheet.create({
     circleRadius: 5,
     circlePitchAlignment: 'map',
   },
-
   clusteredPoints: {
     circlePitchAlignment: 'map',
     circleColor: Mapbox.StyleSheet.source(

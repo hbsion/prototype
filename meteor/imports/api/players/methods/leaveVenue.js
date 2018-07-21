@@ -1,6 +1,7 @@
 import {ValidatedMethod} from 'meteor/mdg:validated-method'
 import SimpleSchema      from 'simpl-schema'
 
+import {Venues}  from '/imports/api/venues/Venues'
 import {Players} from '../Players'
 
 export default new ValidatedMethod({
@@ -12,5 +13,8 @@ export default new ValidatedMethod({
     console.log(player)
     console.log(player._id)
     Players.update(player._id, {$set: {venueOsmId: null}})
+    Venues.upsert({osmId: player.venueOsmId}, {$set: {
+      count: Players.find({venueOsmId: player.venueOsmId}).count()
+    }})
   }
 })

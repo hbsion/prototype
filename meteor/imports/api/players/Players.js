@@ -1,7 +1,7 @@
 import {Mongo}      from 'meteor/mongo'
 import SimpleSchema from 'simpl-schema'
 
-export const Players = new Meteor.Collection('players')
+export const Players = new Mongo.Collection('players')
 
 Players.schema = new SimpleSchema({
   userId:    {type: String, regEx: SimpleSchema.RegEx.Id},
