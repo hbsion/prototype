@@ -5,7 +5,6 @@ import Meteor, {withTracker} from 'react-native-meteor'
 import { Redirect } from 'react-router-native'
 
 import venuesCache from '/modules/cache/venues'
-import getRoomId   from '/modules/chat/getRoomId'
 import PlayerList  from './PlayerList'
 
 @withTracker(({venueOsmId}) => {
@@ -14,13 +13,17 @@ import PlayerList  from './PlayerList'
   const player  = Meteor.collection('players').findOne({userId: Meteor.userId()})
   const players = Meteor.collection('players').find({venueOsmId, _id: {$ne: player._id}})
     .map((obj) => {
-      const room = getRoomId(obj._id, player._id)
-      Meteor.subscribe('chat.messages', room)
+      const room = Meteor.collection('chat_rooms').findOne({
+        playerIds: {$all: [obj._id, player._id], $size: 2}
+      })
+      if(!room) return obj
+      console.log(room._id)
+      Meteor.subscribe('chat.messages', room._id)
       const newMessages = Meteor.collection('chat_messages').find(
-        {room, acks: {$ne: player._id}, playerId: {$ne: player._id}},
-        {fields: {room: 1}, sort: {createdAt: -1}}
+        {roomId: room._id, acks: {$ne: player._id}, playerId: {$ne: player._id}},
+        {fields: {roomId: 1}, sort: {createdAt: -1}}
       )
-      return { ...obj, room, newMessages: newMessages.length }
+      return { ...obj, newMessages: newMessages.length }
     })
   return {
     venueOsmId,
@@ -43,9 +46,6 @@ export default class InsideVenue extends React.Component {
         this.setState({venue})
       })
   }
-  /*componentWillUnmount() {
-    this.leaveVenue()
-  }*/
   render() {
     const {players} = this.props
     const {venue, venueOsmId} = this.state

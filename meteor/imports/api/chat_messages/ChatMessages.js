@@ -4,7 +4,7 @@ import SimpleSchema from 'simpl-schema'
 export const ChatMessages = new Mongo.Collection('chat_messages')
 
 ChatMessages.schema = new SimpleSchema({
-  room:       {type: String},
+  roomId:     {type: String, regEx: SimpleSchema.RegEx.Id},
   playerId:   {type: String, regEx: SimpleSchema.RegEx.Id},
   text:       {type: String},
   acks:       {type: Array, optional: true, defaultValue: []},
@@ -27,6 +27,6 @@ ChatMessages.privateFields = {
   acks:         1,
   createdAt:    1,
   playerId:     1,
-  room:         1,
+  roomId:       1,
   text:         1,
 }
