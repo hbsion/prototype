@@ -9,10 +9,28 @@ const now = new Date()
   //Meteor.subscribe('players.one')
   const handler = Meteor.subscribe('chat.messages', room)
   const player   = Meteor.collection('players').findOne({userId: Meteor.userId()})
-  const messages = Meteor.collection('chat_messages').find(
-    {room, createdAt: {$gt: now}},
-    {sort: {createdAt: -1}}
+  const notAcked = Meteor.collection('chat_messages').find(
+    {room, acks: {$ne: player._id}, playerId: {$ne: player._id}}, {fields: {}}
   )
+  const messages = Meteor.collection('chat_messages').find(
+    {room},
+    {sort: {createdAt: -1}, limit: Math.max(10, notAcked.length)}
+  ).map(({_id, acks, text, createdAt, playerId}) => ({
+    _id,
+    toAck: acks.indexOf(player._id) === -1 && playerId !== player._id,
+    text,
+    createdAt,
+    user: (() => {
+      const { _id } = Meteor.collection('players').findOne(playerId)
+      return {
+        _id,
+        name: _id === player._id ? 'Moi' : 'Toto',
+        //avatar: 'https://facebook.github.io/react/img/logo_og.png',
+      }
+    })(),
+    //image: 'https://facebook.github.io/react/img/logo_og.png',
+    // Any additional custom parameters are passed through
+  }))
   console.log(room, handler.ready())
   console.log("get", messages)
   return {
@@ -22,50 +40,33 @@ const now = new Date()
   }
 })
 export default class Chat extends React.PureComponent {
-  state = {
-    messages: []
-  }
   constructor(props) {
     super(props)
   }
-  componentDidUpdate(prevProps) {
-    const { messages, player } = this.props
-    console.log(prevProps.messages, messages)
-    if(messages.length !== prevProps.messages.length) {
-      console.log("update")
-      this.setState(previousState => ({
-        messages: messages.map(({_id, text, createdAt, playerId}) => ({
-          _id,
-          text,
-          createdAt,
-          user: (() => {
-            const { _id } = Meteor.collection('players').findOne(playerId)
-            return {
-              _id,
-              name: _id === player._id ? 'Moi' : 'Toto',
-              //avatar: 'https://facebook.github.io/react/img/logo_og.png',
-            }
-          })(),
-          //image: 'https://facebook.github.io/react/img/logo_og.png',
-          // Any additional custom parameters are passed through
-        }))
-      }))
-    }
-  }
   render() {
-    const { player } = this.props
+    const { messages, player } = this.props
     if(!player) {
       return <View></View>
     }
+    this.ack()
     return (
       <GiftedChat
-        messages={this.state.messages}
+        messages={messages}
         onSend={messages => this.onSend(messages)}
         user={{
           _id: player._id,
         }}
       />
     )
+  }
+  ack() {
+    const { messages, player } = this.props
+    messages
+      .filter(({toAck}) => toAck)
+      .map(({_id, text, playerId}) => {
+        console.log("ack", text, playerId, player._id)
+        Meteor.call('chat.ack', {messageId: _id})
+      })
   }
   onSend(messages = []) {
     messages.forEach(({text, user, createdAt, _id}) => {

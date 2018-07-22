@@ -17,6 +17,6 @@ export default new ValidatedMethod({
     console.log(text, createdAt, room, playerId, _id)
     const player = Players.findOne({userId: this.userId})
     if(player._id !== playerId) throw new Meteor.Error('NOT_AUTHORIZED')
-    ChatMessages.insert({text, createdAt, room, playerId, _id})
+    ChatMessages.insert({text, createdAt, room, playerId, _id, acks: []})
   }
 })

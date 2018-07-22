@@ -7,6 +7,8 @@ ChatMessages.schema = new SimpleSchema({
   room:       {type: String},
   playerId:   {type: String, regEx: SimpleSchema.RegEx.Id},
   text:       {type: String},
+  acks:       {type: Array, optional: true, defaultValue: []},
+  'acks.$':   {type: String},
   createdAt: {
     type: Date,
     autoValue: function() {
@@ -22,8 +24,9 @@ ChatMessages.attachSchema(ChatMessages.schema)
 ChatMessages.publicFields = {}
 
 ChatMessages.privateFields = {
+  acks:         1,
+  createdAt:    1,
   playerId:     1,
   room:         1,
   text:         1,
-  createdAt:    1,
 }

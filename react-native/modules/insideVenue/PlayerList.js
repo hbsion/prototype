@@ -5,7 +5,7 @@ import { Link } from 'react-router-native'
 
 export default class PlayerList extends React.Component {
   static propTypes = {
-    players: PropTypes.array,
+    players:     PropTypes.array.isRequired,
   }
   render() {
     const {players} = this.props
@@ -21,9 +21,10 @@ export default class PlayerList extends React.Component {
     )
   }
   _renderItem = ({item}) => (
-    <MyListItem
+    <PlayerListItem
       id={item._id}
       title={item._id}
+      count={item.newMessages}
     />
   )
   _renderSeparator = () => {
@@ -41,14 +42,14 @@ export default class PlayerList extends React.Component {
   _keyExtractor = (item) => item._id
 }
 
-class MyListItem extends React.PureComponent {
+class PlayerListItem extends React.PureComponent {
   render() {
-    const {id, title} = this.props
+    const {id, count, title} = this.props
     return (
       <View style={styles.item}>
         <TouchableOpacity>
           <View>
-            <Link to={`/player/${id}`}><Text>{title}</Text></Link>
+            <Link to={`/player/${id}`}><Text>{title} ({count})</Text></Link>
           </View>
         </TouchableOpacity>
       </View>

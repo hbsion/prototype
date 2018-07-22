@@ -2,18 +2,26 @@ import PropTypes             from 'prop-types'
 import React                 from 'react'
 import {View, StyleSheet, Text, Button} from 'react-native'
 import Meteor, {withTracker} from 'react-native-meteor'
-import { Redirect, withRouter } from 'react-router-native'
+import { Redirect } from 'react-router-native'
 
 import venuesCache from '/modules/cache/venues'
-import PlayerList from './PlayerList'
+import getRoomId   from '/modules/chat/getRoomId'
+import PlayerList  from './PlayerList'
 
-//@withRouter
 @withTracker(({venueOsmId}) => {
   console.log("inside")
-  console.log(venueOsmId)
   Meteor.subscribe('players.insideVenue', venueOsmId)
   const player  = Meteor.collection('players').findOne({userId: Meteor.userId()})
   const players = Meteor.collection('players').find({venueOsmId, _id: {$ne: player._id}})
+    .map((obj) => {
+      const room = getRoomId(obj._id, player._id)
+      Meteor.subscribe('chat.messages', room)
+      const newMessages = Meteor.collection('chat_messages').find(
+        {room, acks: {$ne: player._id}, playerId: {$ne: player._id}},
+        {fields: {room: 1}, sort: {createdAt: -1}}
+      )
+      return { ...obj, room, newMessages: newMessages.length }
+    })
   return {
     venueOsmId,
     players,
@@ -21,8 +29,8 @@ import PlayerList from './PlayerList'
 })
 export default class InsideVenue extends React.Component {
   static propTypes = {
-    venueOsmId: PropTypes.string.isRequired,
-    players:    PropTypes.array,
+    venueOsmId:  PropTypes.string.isRequired,
+    players:     PropTypes.array,
   }
   state = {}
   constructor(props) {
@@ -35,6 +43,9 @@ export default class InsideVenue extends React.Component {
         this.setState({venue})
       })
   }
+  /*componentWillUnmount() {
+    this.leaveVenue()
+  }*/
   render() {
     const {players} = this.props
     const {venue, venueOsmId} = this.state
@@ -51,7 +62,7 @@ export default class InsideVenue extends React.Component {
     return (
       <View style={styles.container}>
         <Text>{venue.properties.name} ({players.length})</Text>
-        <PlayerList players={players} />
+        <PlayerList {...{players}} />
         <Button title="sortir" onPress={this.leaveVenue} />
       </View>
     )
