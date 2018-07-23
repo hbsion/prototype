@@ -24,6 +24,7 @@ android/*.iml
 android/*/*.iml
 android/app/build
 android/build
+android/app/google-services.json
 
 .env
 .env-production

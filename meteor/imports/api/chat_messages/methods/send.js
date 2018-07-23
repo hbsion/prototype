@@ -1,3 +1,4 @@
+import firebaseAdmin     from 'firebase-admin'
 import {ValidatedMethod} from 'meteor/mdg:validated-method'
 import SimpleSchema      from 'simpl-schema'
 
@@ -20,5 +21,31 @@ export default new ValidatedMethod({
     const room = ChatRooms.findOne(roomId)
     if(room.playerIds.indexOf(player._id) === -1) throw new Meteor.Error('WRONG_ROOM')
     ChatMessages.insert({_id, acks: [], playerId, roomId, text})
+
+    const userIds = Players.find({_id: {$in: room.otherPlayerIds(playerId)}}).map(({userId}) => userId)
+    Meteor.users.find({_id: {$in: userIds}, 'profile.appState': {$ne: 'active'}})
+    .map(async ({_id, profile: {fcmToken}}) => {
+      console.log("notify", _id, fcmToken)
+      if(fcmToken) {
+        try {
+          const response = await firebaseAdmin.messaging().send({
+            android: {
+              notification: {
+                //tag: 'chat',
+              },
+              priority:    'high',
+              ttl:         1000 * 60 * 60,
+            },
+            notification: {
+              body:  `Un message en attente`,
+              title: 'Nouveau message',
+            },
+            token: fcmToken,
+          })
+        } catch(error) {
+          console.log('Error sending message:', error);
+        }
+      }
+    })
   }
 })

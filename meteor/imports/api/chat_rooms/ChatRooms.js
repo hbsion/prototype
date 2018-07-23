@@ -24,3 +24,9 @@ ChatRooms.privateFields = {
   playerIds:    1,
   createdAt:    1,
 }
+
+ChatRooms.helpers({
+  otherPlayerIds(playerId) {
+    return this.playerIds.filter(id => id !== playerId)
+  }
+})

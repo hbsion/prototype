@@ -16,7 +16,7 @@ export default new ValidatedMethod({
     const message = ChatMessages.findOne(messageId)
     if(message.acks.indexOf(player._id) > -1) return
     if(player._id === message.playerId) return
-    const room = ChatRooms.findOne(roomId)
+    const room = ChatRooms.findOne(message.roomId)
     if(room.playerIds.indexOf(player._id) === -1) throw new Meteor.Error('WRONG_ROOM')
     message.acks.push(player._id)
     ChatMessages.update(message._id, {$addToSet: {acks: player._id}})
