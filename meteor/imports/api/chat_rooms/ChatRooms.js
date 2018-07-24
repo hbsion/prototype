@@ -18,6 +18,12 @@ ChatRooms.schema = new SimpleSchema({
 
 ChatRooms.attachSchema(ChatRooms.schema)
 
+ChatRooms.deny({
+  insert: () => true,
+  update: () => true,
+  remove: () => true,
+})
+
 ChatRooms.publicFields = {}
 
 ChatRooms.privateFields = {

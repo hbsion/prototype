@@ -4,14 +4,16 @@ import { Alert, AppState }   from 'react-native'
 import Config                from 'react-native-config'
 import firebase              from 'react-native-firebase'
 import Meteor, {Accounts, withTracker} from 'react-native-meteor'
-import { NativeRouter, Route, Switch, BackButton, withRouter } from 'react-router-native'
+import { NativeRouter, Route, Switch, BackButton } from 'react-router-native'
 
 import Disconnected      from './components/Disconnected'
 import Home              from './components/Home'
 import Loading           from './components/Loading'
+import Chat              from './modules/chat/Chat'
+import DisplayUniqueCode from './modules/challenge/DisplayUniqueCode'
+import ScanQRCode        from './modules/challenge/ScanQRCode'
 import InsideVenue       from './modules/insideVenue/InsideVenue'
 import PlayerProfile     from './modules/insideVenue/PlayerProfile'
-import Chat              from './modules/chat/Chat'
 import SignIn            from './modules/login/ui/SignIn'
 
 Meteor.connect(`ws://${Config.SERVER_URL}/websocket`)
@@ -47,14 +49,16 @@ export default class App extends React.PureComponent {
         await firebase.messaging().requestPermission()
       }
       console.log("enabled")
-      const fcmToken = await firebase.messaging().getToken()
-      if(fcmToken) {
-        Accounts.onLogin(() => {
+      Accounts.onLogin(async () => {
+        this._handleAppStateChange(this.appState)
+        console.log(this.appState)
+        const fcmToken = await firebase.messaging().getToken()
+        if(fcmToken) {
           this._saveFcmToken(fcmToken)
-        })
-      } else {
-        console.warning("no token!!")
-      }
+        } else {
+          console.warning("no token!!")
+        }
+      })
       this.messageListener = firebase.messaging().onMessage((message) => {
         Alert.alert(message)
       })
@@ -89,7 +93,6 @@ export default class App extends React.PureComponent {
   }
   render() {
     const {connected, player, user} = this.props
-    console.log(player, user)
     if(!connected) {
       return <Disconnected {...{connected}} />
     }
@@ -107,7 +110,9 @@ export default class App extends React.PureComponent {
         <BackButton>
           <Switch>
             <Route exact path="/player/:playerId" component={PlayerProfile} />
-            <Route path="/chat/:roomId" component={Chat} />
+            <Route path="/chat/:roomId"           component={Chat} />
+            <Route path="/show-qrcode"            component={DisplayUniqueCode} />
+            <Route path="/scan"                   component={ScanQRCode} />
             {!!player.venueOsmId &&
               <Route render={() => <InsideVenue venueOsmId={player.venueOsmId} />} />
             }

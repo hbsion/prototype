@@ -10,6 +10,12 @@ Venues.schema = new SimpleSchema({
 
 Venues.attachSchema(Venues.schema)
 
+Venues.deny({
+  insert: () => true,
+  update: () => true,
+  remove: () => true,
+})
+
 Venues.publicFields = {
   count: 1,
   osmId: 1,

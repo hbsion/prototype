@@ -10,6 +10,12 @@ Players.schema = new SimpleSchema({
 
 Players.attachSchema(Players.schema)
 
+Players.deny({
+  insert: () => true,
+  update: () => true,
+  remove: () => true,
+})
+
 Players.publicFields = {}
 
 Players.privateFields = {

@@ -4,7 +4,7 @@ export default (cities) => {
     "features": [].concat(
       ...cities.features.map(({properties: {name}, geometry: {coordinates: [lon, lat]}}) => {
         const length = Math.round(Math.random() * 100)
-        if(name === 'Avignon') return []
+        if(name === 'Lyon') return []
         return Array.from({length}, (v, i) => i)
           .map(i => ({
             "type": "Feature",

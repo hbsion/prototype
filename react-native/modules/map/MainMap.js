@@ -28,8 +28,8 @@ export default class MainMap extends React.Component {
   }
   render() {
     const { enterVenue, /*latitude, longitude,*/ venues } = this.props
-    const latitude  = 43.9493143
-    const longitude = 4.8060329
+    const latitude  = 45.7578
+    const longitude = 4.8351
     return (
       <View style={styles.container}>
         <View style={{flex: 0.1}}>

@@ -2,7 +2,7 @@ import PropTypes             from 'prop-types'
 import React                 from 'react'
 import {View, StyleSheet, Text, Button} from 'react-native'
 import Meteor, {withTracker} from 'react-native-meteor'
-import { Redirect } from 'react-router-native'
+import { Redirect, withRouter } from 'react-router-native'
 
 import venuesCache from '/modules/cache/venues'
 import PlayerList  from './PlayerList'
@@ -30,6 +30,7 @@ import PlayerList  from './PlayerList'
     players,
   }
 })
+@withRouter
 export default class InsideVenue extends React.Component {
   static propTypes = {
     venueOsmId:  PropTypes.string.isRequired,
@@ -63,9 +64,17 @@ export default class InsideVenue extends React.Component {
       <View style={styles.container}>
         <Text>{venue.properties.name} ({players.length})</Text>
         <PlayerList {...{players}} />
-        <Button title="sortir" onPress={this.leaveVenue} />
+        <Button title="scanner"  onPress={this.scan} />
+        <Button title="trouvé !" onPress={this.found} />
+        <Button title="sortir"   onPress={this.leaveVenue} />
       </View>
     )
+  }
+  found = () => {
+    this.props.history.push('/show-qrcode')
+  }
+  scan = () => {
+    this.props.history.push('/scan')
   }
   leaveVenue = () => {
     Meteor.call('players.leaveVenue')

@@ -21,6 +21,12 @@ ChatMessages.schema = new SimpleSchema({
 
 ChatMessages.attachSchema(ChatMessages.schema)
 
+ChatMessages.deny({
+  insert: () => true,
+  update: () => true,
+  remove: () => true,
+})
+
 ChatMessages.publicFields = {}
 
 ChatMessages.privateFields = {
