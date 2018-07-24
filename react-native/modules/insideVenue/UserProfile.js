@@ -5,49 +5,49 @@ import { Link, withRouter }  from 'react-router-native'
 import Meteor, {withTracker} from 'react-native-meteor'
 
 @withRouter
-@withTracker(({match: {params: {playerId}}}) => {
-  Meteor.subscribe('players.one')
-  const currentPlayer = Meteor.collection('players').findOne({userId: Meteor.userId()})
+@withTracker(({match: {params: {userId}}}) => {
+  Meteor.subscribe('users.me')
+  const currentUser = Meteor.user()
   let newMessages = 0
   let roomId
-  if(currentPlayer) {
+  if(currentUser) {
     const room = Meteor.collection('chat_rooms').findOne({
-      playerIds: {$all: [playerId, currentPlayer._id], $size: 2}
+      userIds: {$all: [userId, currentUser._id], $size: 2}
     }) || {}
     roomId = room._id
     if(roomId) {
       Meteor.subscribe('chat.messages', roomId)
       newMessages = Meteor.collection('chat_messages').find(
-        {roomId, acks: {$ne: currentPlayer._id}, playerId: {$ne: currentPlayer._id}},
+        {roomId, acks: {$ne: currentUser._id}, userId: {$ne: currentUser._id}},
         {fields: {roomId: 1}, sort: {createdAt: -1}}
       ).length
     } else {
-      roomId = 'new_' + playerId
+      roomId = 'new_' + userId
     }
   }
-  console.log("currentPlayer", currentPlayer)
+  console.log("currentUser", currentUser)
   return {
-    currentPlayer,
+    currentUser,
     newMessages,
-    playerId,
+    userId,
     roomId
   }
 })
-export default class PlayerProfile extends React.Component {
+export default class UserProfile extends React.Component {
   static propTypes = {
     newMessages:   PropTypes.number.isRequired,
-    playerId:      PropTypes.string.isRequired,
+    userId:        PropTypes.string.isRequired,
     roomId:        PropTypes.string.isRequired,
-    currentPlayer: PropTypes.object,
+    currentUser:   PropTypes.object,
   }
   render() {
-    const { currentPlayer, newMessages, playerId, roomId } = this.props
-    if(!currentPlayer) {
+    const { currentUser, newMessages, userId, roomId } = this.props
+    if(!currentUser) {
       return null
     }
     return (
       <View>
-        <Text>{playerId}</Text>
+        <Text>{userId}</Text>
         <Link to={`/chat/${roomId}`}><Text>Chat ({newMessages})</Text></Link>
       </View>
     )

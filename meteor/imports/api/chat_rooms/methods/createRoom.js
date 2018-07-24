@@ -1,22 +1,21 @@
 import {ValidatedMethod} from 'meteor/mdg:validated-method'
+import {Meteor}          from 'meteor/meteor'
 import SimpleSchema      from 'simpl-schema'
 
-import {Players}   from '/imports/api/players/Players'
 import {ChatRooms} from '../ChatRooms'
 
 export default new ValidatedMethod({
   name: 'chat.createRoom',
   validate: new SimpleSchema({
-    playerIds:     Array,
-    'playerIds.$': String,
+    userIds:     Array,
+    'userIds.$': String,
   }).validator(),
-  async run({playerIds}) {
-    const players = Players.find({_id: {$in: playerIds}}, {fields: {}}).fetch()
-    console.log(players)
-    if(players.length !== playerIds.length) throw new Meteor.Error('NOT_FOUND')
-    const room = ChatRooms.findOne({playersIds: {$all: playerIds, $size: playerIds.length}})
+  async run({userIds}) {
+    const users = Meteor.users.find({_id: {$in: userIds}}, {fields: {}})
+    if(users.count() !== userIds.length) throw new Meteor.Error('NOT_FOUND')
+    const room = ChatRooms.findOne({userIds: {$all: userIds, $size: userIds.length}})
     if(!room) {
-      return ChatRooms.insert({playerIds})
+      return ChatRooms.insert({userIds})
     }
     return room._id
   }

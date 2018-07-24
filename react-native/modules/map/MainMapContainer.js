@@ -19,7 +19,8 @@ import MainMap      from './MainMap'
 })
 export default class MainMapContainer extends Component {
   static propTypes = {
-    player: PropTypes.object,
+    user:   PropTypes.object,
+    venues: PropTypes.array,
   }
   constructor(props) {
     super(props)
@@ -34,7 +35,7 @@ export default class MainMapContainer extends Component {
     this.requestGeolocationPermission()
   }
   render() {
-    const { player } = this.props
+    const { user } = this.props
     const { latitude, longitude } = this.state
     const venues = !this.state.venues ? null : {
       ...this.state.venues,
@@ -61,7 +62,7 @@ export default class MainMapContainer extends Component {
         hideVenues={this.hideVenues}
         latitude={latitude}
         longitude={longitude}
-        playerId={player._id}
+        userId={user._id}
         venues={venues}
       />
     )
@@ -86,7 +87,7 @@ export default class MainMapContainer extends Component {
   }
   enterVenue = (venue) => () => {
     const id = venue.id.split('/')[1]
-    Meteor.call('players.enterInsideVenue', {venueOsmId: id}, (err) => {
+    Meteor.call('users.enterInsideVenue', {venueOsmId: id}, (err) => {
       if(err) {
         console.log(err)
       } else {

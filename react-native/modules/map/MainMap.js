@@ -5,13 +5,13 @@ import {View, StyleSheet, Text, Button, Alert} from 'react-native'
 import Config       from 'react-native-config'
 
 import citiesFr     from './citiesFr'
-import fakePlayers  from './fakePlayers'
+import fakeUsers  from './fakeUsers'
 import isInsideBbox from './isInsideBbox'
 
 Mapbox.setAccessToken(Config.MAPBOX_KEY)
 
 const cities = citiesFr()
-const players = fakePlayers(cities)
+const users = fakeUsers(cities)
 
 export default class MainMap extends React.Component {
   static propTypes = {
@@ -55,27 +55,27 @@ export default class MainMap extends React.Component {
               />
             </Mapbox.ShapeSource>
             <Mapbox.ShapeSource
-              id="players"
+              id="users"
               cluster
               clusterRadius={50}
               clusterMaxZoom={14}
-              shape={players}
+              shape={users}
             >
               <Mapbox.SymbolLayer
-                id="playerPointCount"
+                id="userPointCount"
                 style={layerStyles.clusterCount}
               />
               <Mapbox.CircleLayer
-                id="playerClusteredPoints"
-                belowLayerID="playerPointCount"
+                id="userClusteredPoints"
+                belowLayerID="userPointCount"
                 filter={['has', 'point_count']}
                 style={layerStyles.clusteredPoints}
               />
               <Mapbox.CircleLayer
-                id="playerSinglePoint"
-                belowLayerID="playerClusteredPoints"
+                id="userSinglePoint"
+                belowLayerID="userClusteredPoints"
                 filter={['!has', 'point_count']}
-                style={layerStyles.playerSinglePoint}
+                style={layerStyles.userSinglePoint}
               />
             </Mapbox.ShapeSource>
             {venues && venues.features.length <= 30 && venues.features.map((feature, idx) => (
@@ -109,7 +109,7 @@ export default class MainMap extends React.Component {
                 shape={venues}>
                 <Mapbox.CircleLayer
                   id="venuesPoints"
-                  belowLayerID="playerSinglePoint"
+                  belowLayerID="userSinglePoint"
                   style={layerStyles.singlePoint}
                 />
               </Mapbox.ShapeSource>
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   }
 })
 const layerStyles = Mapbox.StyleSheet.create({
-  playerSinglePoint: {
+  userSinglePoint: {
     circleColor: 'blue',
     circleOpacity: 0.84,
     circleStrokeWidth: 2,

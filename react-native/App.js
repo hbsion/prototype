@@ -1,44 +1,46 @@
 import PropTypes             from 'prop-types'
 import React                 from 'react'
-import { Alert, AppState }   from 'react-native'
+import { Alert, AppState, Linking }   from 'react-native'
 import Config                from 'react-native-config'
 import firebase              from 'react-native-firebase'
 import Meteor, {Accounts, withTracker} from 'react-native-meteor'
-import { NativeRouter, Route, Switch, BackButton } from 'react-router-native'
+import { NativeRouter, Route, Switch, BackButton, DeepLinking } from 'react-router-native'
 
 import Disconnected      from './components/Disconnected'
 import Home              from './components/Home'
-import Loading           from './components/Loading'
 import Chat              from './modules/chat/Chat'
 import DisplayUniqueCode from './modules/challenge/DisplayUniqueCode'
 import ScanQRCode        from './modules/challenge/ScanQRCode'
 import InsideVenue       from './modules/insideVenue/InsideVenue'
-import PlayerProfile     from './modules/insideVenue/PlayerProfile'
+import UserProfile       from './modules/insideVenue/UserProfile'
 import SignIn            from './modules/login/ui/SignIn'
+import oauthAuthorize    from './modules/login/oauthAuthorize'
 
 Meteor.connect(`ws://${Config.SERVER_URL}/websocket`)
 
 @withTracker(() => {
   const user = Meteor.user()
-  Meteor.subscribe('players.one')
+  Meteor.subscribe('users.me')
   Meteor.subscribe('chat.myRooms')
-  const player = !user ? null : Meteor.collection('players').findOne({userId: user._id})
   console.log("refresh")
   return {
     connected: Meteor.status().connected,
     user,
-    player,
   }
 })
 export default class App extends React.PureComponent {
   static propTypes = {
     connected: PropTypes.bool.isRequired,
-    player:    PropTypes.object,
     user:      PropTypes.object,
   }
   appState = AppState.currentState
 
   async componentDidMount() {
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        console.log('Initial url is: ' + url)
+      }
+    })
     this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
       this._saveFcmToken(fcmToken)
     })
@@ -84,7 +86,7 @@ export default class App extends React.PureComponent {
     }
   }
   componentWillUnmount() {
-    Meteor.call('players.leaveVenue')
+    Meteor.call('users.leaveVenue')
     AppState.removeEventListener('change', this._handleAppStateChange)
     this.onTokenRefreshListener()
     this.messageListener()
@@ -92,29 +94,28 @@ export default class App extends React.PureComponent {
     this.notificationDisplayedListener()
   }
   render() {
-    const {connected, player, user} = this.props
+    const {connected, user} = this.props
     if(!connected) {
       return <Disconnected {...{connected}} />
     }
     if(!user) {
       return <SignIn />
     }
-    if(!player) {
-      return <Loading />
-    }
-    if(!player.venueOsmId) {
-      return <Home {...{player}} />
+    if(!user.venueOsmId) {
+      return <Home {...{user}} />
     }
     return (
       <NativeRouter>
         <BackButton>
+          <DeepLinking />
           <Switch>
-            <Route exact path="/player/:playerId" component={PlayerProfile} />
+            <Route exact path="/user/:userId"     component={UserProfile} />
             <Route path="/chat/:roomId"           component={Chat} />
             <Route path="/show-qrcode"            component={DisplayUniqueCode} />
             <Route path="/scan"                   component={ScanQRCode} />
-            {!!player.venueOsmId &&
-              <Route render={() => <InsideVenue venueOsmId={player.venueOsmId} />} />
+            <Route path="authorize" function={oauthAuthorize} />
+            {!!user.venueOsmId &&
+              <Route render={() => <InsideVenue venueOsmId={user.venueOsmId} />} />
             }
           </Switch>
         </BackButton>

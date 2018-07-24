@@ -5,36 +5,37 @@ import Meteor, {withTracker} from 'react-native-meteor'
 import { Redirect, withRouter } from 'react-router-native'
 
 import venuesCache from '/modules/cache/venues'
-import PlayerList  from './PlayerList'
+import UserList  from './UserList'
 
 @withTracker(({venueOsmId}) => {
   console.log("inside")
-  Meteor.subscribe('players.insideVenue', venueOsmId)
-  const player  = Meteor.collection('players').findOne({userId: Meteor.userId()})
-  const players = Meteor.collection('players').find({venueOsmId, _id: {$ne: player._id}})
+  Meteor.subscribe('users.insideVenue', venueOsmId)
+  const userId  = Meteor.userId()
+  const users = Meteor.collection('users').find({venueOsmId, _id: {$ne: userId}})
     .map((obj) => {
       const room = Meteor.collection('chat_rooms').findOne({
-        playerIds: {$all: [obj._id, player._id], $size: 2}
+        userIds: {$all: [obj._id, userId], $size: 2}
       })
       if(!room) return obj
       console.log(room._id)
       Meteor.subscribe('chat.messages', room._id)
       const newMessages = Meteor.collection('chat_messages').find(
-        {roomId: room._id, acks: {$ne: player._id}, playerId: {$ne: player._id}},
+        {roomId: room._id, acks: {$ne: userId}, userId: {$ne: userId}},
         {fields: {roomId: 1}, sort: {createdAt: -1}}
       )
       return { ...obj, newMessages: newMessages.length }
     })
   return {
     venueOsmId,
-    players,
+    users,
   }
 })
 @withRouter
 export default class InsideVenue extends React.Component {
   static propTypes = {
+    history:     PropTypes.object.isRequired,
     venueOsmId:  PropTypes.string.isRequired,
-    players:     PropTypes.array,
+    users:       PropTypes.array,
   }
   state = {}
   constructor(props) {
@@ -48,12 +49,12 @@ export default class InsideVenue extends React.Component {
       })
   }
   render() {
-    const {players} = this.props
+    const {users} = this.props
     const {venue, venueOsmId} = this.state
     if(!venueOsmId) {
       <Redirect to='/' />
     }
-    if(!venue || !players) {
+    if(!venue || !users) {
       return (
         <View style={styles.container}>
           <Text>Chargement...</Text>
@@ -62,8 +63,8 @@ export default class InsideVenue extends React.Component {
     }
     return (
       <View style={styles.container}>
-        <Text>{venue.properties.name} ({players.length})</Text>
-        <PlayerList {...{players}} />
+        <Text>{venue.properties.name} ({users.length})</Text>
+        <UserList {...{users}} />
         <Button title="scanner"  onPress={this.scan} />
         <Button title="trouvé !" onPress={this.found} />
         <Button title="sortir"   onPress={this.leaveVenue} />
@@ -77,7 +78,7 @@ export default class InsideVenue extends React.Component {
     this.props.history.push('/scan')
   }
   leaveVenue = () => {
-    Meteor.call('players.leaveVenue')
+    Meteor.call('users.leaveVenue')
   }
 }
 

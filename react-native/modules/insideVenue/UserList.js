@@ -3,16 +3,16 @@ import React        from 'react'
 import {View, StyleSheet, FlatList, Text, TouchableOpacity, Button, Alert} from 'react-native'
 import { Link } from 'react-router-native'
 
-export default class PlayerList extends React.Component {
+export default class UserList extends React.Component {
   static propTypes = {
-    players:     PropTypes.array.isRequired,
+    users:     PropTypes.array.isRequired,
   }
   render() {
-    const {players} = this.props
+    const {users} = this.props
     return (
       <View style={styles.container}>
         <FlatList
-          data={players}
+          data={users}
           renderItem={this._renderItem}
           renderSeparator={this._renderSeparator}
           keyExtractor={this._keyExtractor}
@@ -21,7 +21,7 @@ export default class PlayerList extends React.Component {
     )
   }
   _renderItem = ({item}) => (
-    <PlayerListItem
+    <UserListItem
       id={item._id}
       title={item._id}
       count={item.newMessages}
@@ -42,14 +42,14 @@ export default class PlayerList extends React.Component {
   _keyExtractor = (item) => item._id
 }
 
-class PlayerListItem extends React.PureComponent {
+class UserListItem extends React.PureComponent {
   render() {
     const {id, count, title} = this.props
     return (
       <View style={styles.item}>
         <TouchableOpacity>
           <View>
-            <Link to={`/player/${id}`}><Text>{title} ({count})</Text></Link>
+            <Link to={`/user/${id}`}><Text>{title} ({count})</Text></Link>
           </View>
         </TouchableOpacity>
       </View>

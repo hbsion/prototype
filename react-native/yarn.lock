@@ -1241,6 +1241,12 @@ babel-plugin-module-resolver@^3.1.1:
     reselect "^3.0.1"
     resolve "^1.4.0"
 
+babel-plugin-ramda-patch@1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/babel-plugin-ramda-patch/-/babel-plugin-ramda-patch-1.1.6.tgz#0303003aca2ebb4e610236caed498e3b9001f9ee"
+  dependencies:
+    ramda "^0.19.1"
+
 babel-plugin-react-transform@2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/babel-plugin-react-transform/-/babel-plugin-react-transform-2.0.2.tgz#515bbfa996893981142d90b1f9b1635de2995109"
@@ -1414,7 +1420,7 @@ babel-plugin-transform-es2015-literals@^6.5.0, babel-plugin-transform-es2015-lit
   dependencies:
     babel-runtime "^6.22.0"
 
-babel-plugin-transform-es2015-modules-commonjs@6.x, babel-plugin-transform-es2015-modules-commonjs@^6.5.0, babel-plugin-transform-es2015-modules-commonjs@^6.8.0:
+babel-plugin-transform-es2015-modules-commonjs@6.x, babel-plugin-transform-es2015-modules-commonjs@^6.18.0, babel-plugin-transform-es2015-modules-commonjs@^6.5.0, babel-plugin-transform-es2015-modules-commonjs@^6.8.0:
   version "6.26.2"
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-es2015-modules-commonjs/-/babel-plugin-transform-es2015-modules-commonjs-6.26.2.tgz#58a793863a9e7ca870bdc5a881117ffac27db6f3"
   dependencies:
@@ -1523,7 +1529,7 @@ babel-plugin-transform-object-assign@^6.5.0:
   dependencies:
     babel-runtime "^6.22.0"
 
-babel-plugin-transform-object-rest-spread@^6.20.2, babel-plugin-transform-object-rest-spread@^6.5.0, babel-plugin-transform-object-rest-spread@^6.8.0:
+babel-plugin-transform-object-rest-spread@^6.20.2, babel-plugin-transform-object-rest-spread@^6.22.0, babel-plugin-transform-object-rest-spread@^6.5.0, babel-plugin-transform-object-rest-spread@^6.8.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-transform-object-rest-spread/-/babel-plugin-transform-object-rest-spread-6.26.0.tgz#0f36692d50fef6b7e2d4b3ac1478137a963b7b06"
   dependencies:
@@ -3590,6 +3596,10 @@ history@^4.7.2:
     resolve-pathname "^2.2.0"
     value-equal "^0.4.0"
     warning "^3.0.0"
+
+hmacsha1@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/hmacsha1/-/hmacsha1-1.0.0.tgz#c1b7ae03a4ea116348090af14f8148c12938a917"
 
 hoek@2.x.x:
   version "2.16.3"
@@ -6035,6 +6045,14 @@ raf@~3.1.0:
   dependencies:
     performance-now "~0.2.0"
 
+ramda@^0.19.1:
+  version "0.19.1"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.19.1.tgz#89c4ad697265ff6b1face9f286439e2520d6679c"
+
+ramda@^0.22.1:
+  version "0.22.1"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.22.1.tgz#031da0c3df417c5b33c96234757eb37033f36a0e"
+
 randomatic@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/randomatic/-/randomatic-3.0.0.tgz#d35490030eb4f7578de292ce6dfb04a91a128923"
@@ -6295,6 +6313,16 @@ react-native-scripts@^1.14.0:
 react-native-scrollable-mixin@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-native-scrollable-mixin/-/react-native-scrollable-mixin-1.0.1.tgz#34a32167b64248594154fd0d6a8b03f22740548e"
+
+react-native-simple-auth@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-simple-auth/-/react-native-simple-auth-2.4.0.tgz#bc3747f753c7c85a89eda88f6d1f49c691e65157"
+  dependencies:
+    babel-plugin-ramda-patch "1.1.6"
+    babel-plugin-transform-es2015-modules-commonjs "^6.18.0"
+    babel-plugin-transform-object-rest-spread "^6.22.0"
+    hmacsha1 "^1.0.0"
+    ramda "^0.22.1"
 
 react-native-svg@^6.4.1:
   version "6.4.1"

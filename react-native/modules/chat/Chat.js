@@ -5,11 +5,11 @@ import { View } from 'react-native'
 import Meteor, {withTracker} from 'react-native-meteor'
 
 @withTracker(({history, match: {params: {roomId}}}) => {
-  const player = Meteor.collection('players').findOne({userId: Meteor.userId()})
+  const user = Meteor.user()
   if(roomId.substr(0, 4) === 'new_') {
-    const playerIds = roomId.split('_').slice(1)
-    playerIds.push(player._id)
-    Meteor.call('chat.createRoom', {playerIds}, function(err, roomId) {
+    const userIds = roomId.split('_').slice(1)
+    userIds.push(user._id)
+    Meteor.call('chat.createRoom', {userIds}, function(err, roomId) {
       if(err) {
         console.error(err)
         return
@@ -21,21 +21,20 @@ import Meteor, {withTracker} from 'react-native-meteor'
   }
   Meteor.subscribe('chat.messages', roomId)
   const notAcked = Meteor.collection('chat_messages').find(
-    {roomId, acks: {$ne: player._id}, playerId: {$ne: player._id}}, {fields: {}}
+    {roomId, acks: {$ne: user._id}, userId: {$ne: user._id}}, {fields: {}}
   )
   const messages = Meteor.collection('chat_messages').find(
     {roomId},
     {sort: {createdAt: -1}, limit: Math.max(10, notAcked.length)}
-  ).map(({_id, acks, text, createdAt, playerId}) => ({
+  ).map(({_id, acks, text, createdAt, userId}) => ({
     _id,
-    toAck: acks.indexOf(player._id) === -1 && playerId !== player._id,
+    toAck: acks.indexOf(userId) === -1 && userId !== user._id,
     text,
     createdAt,
     user: (() => {
-      const { _id } = Meteor.collection('players').findOne(playerId)
       return {
-        _id,
-        name: _id === player._id ? 'Moi' : 'Toto',
+        _id: userId,
+        name: userId === user._id ? 'Moi' : 'Toto',
         //avatar: 'https://facebook.github.io/react/img/logo_og.png',
       }
     })(),
@@ -45,7 +44,7 @@ import Meteor, {withTracker} from 'react-native-meteor'
   console.log("get", messages)
   return {
     messages,
-    player,
+    user,
     roomId,
   }
 })
@@ -53,14 +52,14 @@ export default class Chat extends React.PureComponent {
   static propTypes = {
     messages: PropTypes.array,
     roomId:   PropTypes.string,
-    player:   PropTypes.object,
+    user:     PropTypes.object,
   }
   constructor(props) {
     super(props)
   }
   render() {
-    const { messages, player, roomId } = this.props
-    if(!player || !roomId) {
+    const { messages, user, roomId } = this.props
+    if(!user || !roomId) {
       return <View></View>
     }
     this.ack()
@@ -69,7 +68,7 @@ export default class Chat extends React.PureComponent {
         messages={messages}
         onSend={messages => this.onSend(messages)}
         user={{
-          _id: player._id,
+          _id: user._id,
         }}
       />
     )
@@ -88,7 +87,7 @@ export default class Chat extends React.PureComponent {
       Meteor.call('chat.send', {
         text,
         roomId: this.props.roomId,
-        playerId: user._id,
+        userId: user._id,
         _id,
       })
     })

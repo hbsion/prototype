@@ -4,8 +4,8 @@ import SimpleSchema from 'simpl-schema'
 export const ChatRooms = new Mongo.Collection('chat_rooms')
 
 ChatRooms.schema = new SimpleSchema({
-  playerIds:     {type: Array},
-  'playerIds.$': {type: String, regEx: SimpleSchema.RegEx.Id},
+  userIds:     {type: Array},
+  'userIds.$': {type: String, regEx: SimpleSchema.RegEx.Id},
   createdAt: {
     type: Date,
     autoValue: function() {
@@ -27,12 +27,12 @@ ChatRooms.deny({
 ChatRooms.publicFields = {}
 
 ChatRooms.privateFields = {
-  playerIds:    1,
-  createdAt:    1,
+  userIds:    1,
+  createdAt:  1,
 }
 
 ChatRooms.helpers({
-  otherPlayerIds(playerId) {
-    return this.playerIds.filter(id => id !== playerId)
+  otherUserIds(userId) {
+    return this.userIds.filter(id => id !== userId)
   }
 })

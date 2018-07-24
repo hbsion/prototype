@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Dimensions } from 'react-native'
 import Meteor from 'react-native-meteor'
+import oauthLogin from '../oauthLogin'
 
 const { width } = Dimensions.get('window')
 
@@ -10,12 +11,18 @@ export default class SignIn extends React.Component {
     this.state = {
       email: '',
       code: '',
+      submitted: false,
       waitingCode: false,
       error: null,
     }
   }
   render() {
-    const {waitingCode} = this.state
+    const { submitted, waitingCode} = this.state
+    if(submitted) {
+      return (
+        <View></View>
+      )
+    }
     return (
       <View style={styles.container}>
         <Text>{this.state.error}</Text>
@@ -31,6 +38,15 @@ export default class SignIn extends React.Component {
             />
             <TouchableOpacity style={styles.button} onPress={this.onSignIn}>
               <Text>Get Email code</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={this.oauthLoginAndSave('facebook')}>
+              <Text>Facebook</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={this.oauthLoginAndSave('google')}>
+              <Text>Google</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={this.oauthLoginAndSave('twitter')}>
+              <Text>Twitter</Text>
             </TouchableOpacity>
           </View>
         ||
@@ -60,6 +76,15 @@ export default class SignIn extends React.Component {
       valid = false
     }
     return valid
+  }
+  oauthLoginAndSave = (provider) => async () => {
+    const {user, credentials} = await oauthLogin(provider) || {}
+    if(user && credentials) {
+      Meteor._login({credentials, provider, user}, (err) => {
+        err && console.warn(err)
+      })
+      this.setState({submitted: true})
+    }
   }
   onSignIn = () => {
     const { email } = this.state

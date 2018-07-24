@@ -1,5 +1,5 @@
 export default (cities) => {
-  const players = {
+  const users = {
     "type": "FeatureCollection",
     "features": [].concat(
       ...cities.features.map(({properties: {name}, geometry: {coordinates: [lon, lat]}}) => {
@@ -24,6 +24,6 @@ export default (cities) => {
       })
     )
   }
-  //console.log(players)
-  return players
+  //console.log(users)
+  return users
 }
