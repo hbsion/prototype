@@ -11,7 +11,6 @@ import MainMap      from './MainMap'
 @withTracker((...props) => {
   Meteor.subscribe('venues.count')
   const venues = Meteor.collection('venues').find({})
-  console.log(venues)
   return {
     ...props,
     venues,
@@ -40,10 +39,8 @@ export default class MainMapContainer extends Component {
     const venues = !this.state.venues ? null : {
       ...this.state.venues,
       features: this.state.venues.features.map((feature) => {
-        console.log(feature.id)
         const {count} = this.props.venues.find(({osmId}) => osmId === feature.id.split('/')[1]) || {}
         if(count) {
-          console.log("count", count)
           return {
             ...feature,
             properties: {
@@ -113,26 +110,38 @@ export default class MainMapContainer extends Component {
   }
   getVenues = async (cityName, s, w, n, e) => {
     console.log(cityName)
-    if(!(await venuesCache.getItem(cityName))) {
-      venuesCache.setItem(cityName, {loading: true, data: {}})
-      const TYPES = ['node', 'way', 'relation']
-      const amenities = ['pub', 'bar', 'cafe', 'restaurant', 'fast_food']
-      const baseUrl = 'http://overpass-api.de/api/interpreter?data='
-      const queryStart = `[out:json][timeout:25];area[name="${cityName}"]["boundary"="administrative"];area._(if:t["admin_level"] == _.max(t["admin_level"]))->.s;(`
-      const queryMain = TYPES.map(type => amenities.map(amenity => (
-        `${type}["amenity"="${amenity}"](area.s);`
-      )).join('')).join('')
-      const queryEnd = ');out geom;'
-      const query = baseUrl + queryStart + queryMain + queryEnd
+    const TIMEOUT = 25
+    const TYPES = ['node', 'way', 'relation']
+    const amenities = ['pub', 'bar', 'cafe', 'restaurant', 'fast_food', ]
+    const baseUrl = 'http://overpass-api.de/api/interpreter?data='
+    const queryStart = `[out:json][timeout:${TIMEOUT}];area[name="${cityName}"]["boundary"="administrative"];area._(if:t["admin_level"] == _.max(t["admin_level"]))->.s;(`
+    const queryMain = []
+    TYPES.map(type => amenities.map(amenity => {
+      queryMain.push(`${type}["amenity"="${amenity}"](area.s)`)
+    }))
+    TYPES.map(type => {
+      queryMain.push(`${type}["shop"](area.s)`)
+    })
+    const queryEnd = ';);out geom;'
+    const query = baseUrl + queryStart + queryMain.join(';') + queryEnd
+    const cacheItemName = `${cityName}-${query.length}`
+    let venues = await venuesCache.getItem(cacheItemName)
+    if(!venues || (venues.loading && venues.timeout && Date.now() > venues.timeout)) {
+      await venuesCache.setItem(cacheItemName, {loading: true, data: {}, timeout: Date.now() + (TIMEOUT + 5) * 1000})
       console.log(query)
-      const data = await (
-        fetch(query)
-          .then(res => res.json())
-          .catch(error => console.error(error))
-      )
-      await venuesCache.setItem(cityName, {loading: false, data})
+      try {
+        const data = await (
+          fetch(query)
+            .then(res => res.json())
+            .catch(error => console.error(error))
+        )
+        await venuesCache.setItem(cacheItemName, {loading: false, data})
+      } catch(error) {
+        console.log(error)
+        venuesCache.clearItem(cacheItemName)
+      }
     }
-    const venues = await venuesCache.getItem(cityName)
+    venues = await venuesCache.getItem(cacheItemName)
     if(venues.loading) return
     console.log(venues.data.elements.length)
     const osmObj = {
