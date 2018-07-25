@@ -6,7 +6,6 @@ import Meteor, {withTracker} from 'react-native-meteor'
 
 @withRouter
 @withTracker(({match: {params: {userId}}}) => {
-  Meteor.subscribe('users.me')
   const currentUser = Meteor.user()
   let newMessages = 0
   let roomId

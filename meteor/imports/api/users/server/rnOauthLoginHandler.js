@@ -39,9 +39,11 @@ export default function rnOauthLoginHandler(options) {
     userId = Meteor.users.insert({
       emails:   [{address: email, verified: true}],
       profile:  {},
-      services: [],
+      services: {
+        [provider]: service,
+      },
     })
-    existingUser = Meteor.users.find(userId)
+    existingUser = Meteor.users.findOne(userId)
   }
   console.log(existingUser)
   const servicePath = `services.${provider}`

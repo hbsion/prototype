@@ -35,6 +35,7 @@ Schemas.UserProfile = new SimpleSchema({
 })
 
 Schemas.User = new SimpleSchema({
+  ambassadorMode: {type: Boolean, defaultValue:false},
   createdAt: {
     type: Date,
     autoValue: function() {
@@ -43,16 +44,16 @@ Schemas.User = new SimpleSchema({
       this.unset()
     }
   },
+  isAmbassador:        {type: Boolean, defaultValue: false},
   emails:              {type: Array,  optional: true},
   "emails.$":          {type: Object},
   "emails.$.address":  {type: String, regEx: SimpleSchema.RegEx.Email},
   "emails.$.verified": {type: Boolean},
   ethAddress:          {type: String,  optional: true},
-  isAmbassador:        {type: Boolean, optional: true},
   landingPageUserId:   {type: String,  optional: true},
   referringToken:      {type: String,  optional: true},
   username:            {type: String,  optional: true},
-  venueOsmId:          {type: String, optional: true},
+  venueOsmId:          {type: String,  optional: true},
   services:            {type: Object,  optional: true, blackbox: true},
   profile: {
     type: Schemas.UserProfile,
@@ -64,7 +65,7 @@ Schemas.User = new SimpleSchema({
     autoValue() {
       this.unset()
       if(!this.field('services').isSet) return
-      //const services = this.field('services').value
+      const services = this.field('services').value
       if(services) {
         if(services.facebook) return 'facebook'
         if(services.google)   return 'google'
@@ -81,7 +82,9 @@ Meteor.users.publicFields = {
 
 }
 Meteor.users.privateFields = {
-  venueOsmId: 1,
+  ambassadorMode: 1,
+  isAmbassador:   1,
+  venueOsmId:     1,
 }
 
 Meteor.users.findOneByEmail = (address, options) => Meteor.users.findOne(

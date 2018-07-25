@@ -10,7 +10,7 @@ export default new ValidatedMethod({
   }).validator(),
   async run({venueOsmId}) {
     console.log(venueOsmId, this.userId)
-    const user = Meteor.user()
+    if(!this.userId) return
     Meteor.users.update(this.userId, {$set: {venueOsmId}})
     Venues.upsert({osmId: venueOsmId}, {
       $set: {
