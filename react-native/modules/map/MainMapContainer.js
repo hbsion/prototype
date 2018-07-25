@@ -26,9 +26,9 @@ export default class MainMapContainer extends Component {
     super(props)
     this.state = {
       error:     null,
-      latitude:  null,
-      longitude: null,
-      venues:    null,
+      latitude:  undefined,
+      longitude: undefined,
+      venues:    undefined,
     }
   }
   componentDidMount() {

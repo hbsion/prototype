@@ -7,10 +7,9 @@ export default new ValidatedMethod({
   name: 'users.leaveVenue',
   validate: () => {},
   async run() {
-    console.log(this.userId)
     const user = Meteor.user()
-    console.log(this.userId)
-    Meteor.users.update(this.userId, {$set: {venueOsmId: null}})
+    if(!user) return
+    Meteor.users.update(user._id, {$set: {venueOsmId: null}})
     Venues.upsert({osmId: user.venueOsmId}, {$set: {
       count: Meteor.users.find({venueOsmId: user.venueOsmId}).count()
     }})

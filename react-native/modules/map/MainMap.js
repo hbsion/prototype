@@ -1,14 +1,17 @@
-import Mapbox       from '@mapbox/react-native-mapbox-gl'
+import MapboxGL       from '@mapbox/react-native-mapbox-gl'
 import PropTypes    from 'prop-types'
 import React        from 'react'
-import {View, StyleSheet, Text, Button, Alert} from 'react-native'
+import {View, StyleSheet, Text, Button, Alert, TouchableOpacity} from 'react-native'
 import Config       from 'react-native-config'
 
 import citiesFr     from './citiesFr'
-import fakeUsers  from './fakeUsers'
+import CitiesLayer  from './CitiesLayer'
+import fakeUsers    from './fakeUsers'
 import isInsideBbox from './isInsideBbox'
+import UsersLayer   from './UsersLayer'
+import VenuesLayer  from './VenuesLayer'
 
-Mapbox.setAccessToken(Config.MAPBOX_KEY)
+MapboxGL.setAccessToken(Config.MAPBOX_KEY)
 
 const cities = citiesFr()
 const users = fakeUsers(cities)
@@ -22,104 +25,89 @@ export default class MainMap extends React.Component {
     longitude:  PropTypes.number,
     venues:     PropTypes.object,
   }
-  static defaultProps = {
-    latitude:  0,
-    longitude: 0,
+  constructor(props) {
+    super(props)
+    this.fakeCenter = {
+      lat: 45.7578,
+      lon: 4.8351,
+    }
+    this.state = {
+      center: {
+        lat: this.fakeCenter.lat,
+        lon: this.fakeCenter.lon,
+      },
+      fakeMode: true,
+    }
   }
   render() {
-    const { enterVenue, /*latitude, longitude,*/ venues } = this.props
-    const latitude  = 45.7578
-    const longitude = 4.8351
+    const { latitude, longitude, venues } = this.props
+    const { center, fakeMode } = this.state
+    const lat = fakeMode || !latitude ? this.fakeCenter.lat : latitude
+    const lon = fakeMode || !longitude ? this.fakeCenter.lon : longitude
+    console.log(latitude, longitude)
     return (
       <View style={styles.container}>
         <View style={{flex: 0.1}}>
-          <Text>Latitude: {latitude}</Text>
-          <Text>Longitude: {longitude}</Text>
+          <Text>Latitude: {lat}</Text>
+          <Text>Longitude: {lon}</Text>
         </View>
         <View style={{flex: 0.9}}>
-          <Mapbox.MapView
+          <MapboxGL.MapView
             ref={ref => this.mapView = ref}
-            styleURL={Mapbox.StyleURL.Street}
+            styleURL={MapboxGL.StyleURL.Street}
             zoomLevel={17}
-            centerCoordinate={[longitude, latitude]}
+            centerCoordinate={[lon, lat]}
             showUserLocation={true}
+            userTrackingMode={fakeMode ? MapboxGL.UserTrackingModes.None : MapboxGL.UserTrackingModes.FollowWithHeading}
             onRegionDidChange={this.handleRegionDidChange}
+            onUserLocationUpdate={this.handleUserLocationUpdate}
             style={styles.container}
           >
-            <Mapbox.ShapeSource
-              id="cities"
-              shape={cities}>
-              <Mapbox.CircleLayer
-                id="citiesPoints"
-                style={layerStyles.clusteredPoints}
-              />
-            </Mapbox.ShapeSource>
-            <Mapbox.ShapeSource
-              id="users"
-              cluster
-              clusterRadius={50}
-              clusterMaxZoom={14}
-              shape={users}
-            >
-              <Mapbox.SymbolLayer
-                id="userPointCount"
-                style={layerStyles.clusterCount}
-              />
-              <Mapbox.CircleLayer
-                id="userClusteredPoints"
-                belowLayerID="userPointCount"
-                filter={['has', 'point_count']}
-                style={layerStyles.clusteredPoints}
-              />
-              <Mapbox.CircleLayer
-                id="userSinglePoint"
-                belowLayerID="userClusteredPoints"
-                filter={['!has', 'point_count']}
-                style={layerStyles.userSinglePoint}
-              />
-            </Mapbox.ShapeSource>
-            {venues && venues.features.length <= 30 && venues.features.map((feature, idx) => (
-              <Mapbox.PointAnnotation
-                key={`city-${idx}`}
-                id={`city-${idx}`}
-                coordinate={feature.geometry.coordinates}
+            {fakeMode &&
+              <MapboxGL.PointAnnotation
+                key="me"
+                id="me"
+                coordinate={[center.lon, center.lat]}
               >
-                {feature.properties.count &&
-                  <View style={styles.annotationContainer}>
-                    <View style={styles.annotationFill2}>
-                      <Text style={styles.annotationText}>{feature.properties.count}</Text>
-                    </View>
-                  </View>
-                ||
-                  <View style={styles.annotationContainer}>
-                    <View style={styles.annotationFill} />
-                  </View>
-                }
-                <Mapbox.Callout title={feature.properties.name} style={styles.popup}>
-                  <View>
-                    <Text>{feature.properties.name}</Text>
-                    <Button title="enter" onPress={enterVenue(feature)}>enter</Button>
-                  </View>
-                </Mapbox.Callout>
-              </Mapbox.PointAnnotation>
-            ))}
-            {venues && venues.features.length > 30 &&
-              <Mapbox.ShapeSource
-                id="venues"
-                shape={venues}>
-                <Mapbox.CircleLayer
-                  id="venuesPoints"
-                  belowLayerID="userSinglePoint"
-                  style={layerStyles.singlePoint}
-                />
-              </Mapbox.ShapeSource>
+                <View style={styles.meAnnotationContainer}>
+                  <View style={styles.me} />
+                </View>
+              </MapboxGL.PointAnnotation>
             }
-          </Mapbox.MapView>
+            <CitiesLayer {...{cities}} />
+
+            <UsersLayer {...{users}} />
+
+            <VenuesLayer
+              {...{venues, styles}}
+              canEnter={this.canEnter}
+              enterVenue={this.props.enterVenue}
+            />
+
+          </MapboxGL.MapView>
+          <TouchableOpacity style={styles.button} onPress={() => this.setState({fakeMode: !fakeMode})}>
+            <Text>{fakeMode ? 'Real mode' : 'Fake mode'}</Text>
+          </TouchableOpacity>
         </View>
       </View>
     )
   }
+  canEnter = ([lon, lat]) => {
+    const { center, fakeMode, location } = this.state
+    const userLat = fakeMode ? center.lat : location.latitude
+    const userLon = fakeMode ? center.lon : location.longitude
+    return Math.abs(lat - userLat) < 0.0001 && Math.abs(lon - userLon) < 0.0001
+  }
+  handleUserLocationUpdate = ({timestamp, coords}) => {
+    const {speed, heading, accuracy, altitude, latitude, longitude} = coords
+    console.log({speed, heading, accuracy, altitude, latitude, longitude})
+    this.setState({
+      location: {timestamp, speed, heading, accuracy, altitude, latitude, longitude},
+    })
+  }
   handleRegionDidChange = async () => {
+    const [lon, lat] = await this.mapView.getCenter()
+    this.setState({center: {lon, lat}})
     const [[e, n], [w, s]] = await this.mapView.getVisibleBounds()
     const zoom = await this.mapView.getZoom()
     if(zoom < 14) {
@@ -139,85 +127,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  annotationContainer: {
-    width: 30,
-    height: 30,
+  button: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    backgroundColor: 'white',
+  },
+  meAnnotationContainer: {
+    width: 20,
+    height: 20,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
-    borderRadius: 15,
+    borderRadius: 10,
   },
-  annotationFill: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: 'green',
-    transform: [{ scale: 0.6 }],
-  },
-  annotationFill2: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: 'orange',
-    transform: [{ scale: 0.6 }],
-  },
-  annotationText: {
-    fontSize: 24,
-    textAlign: 'center',
-    lineHeight: 30,
-  },
-  popup: {
-    width: 150,
-    height: 150,
-    padding: 20,
-    backgroundColor: 'white',
-  }
-})
-const layerStyles = Mapbox.StyleSheet.create({
-  userSinglePoint: {
-    circleColor: 'blue',
-    circleOpacity: 0.84,
-    circleStrokeWidth: 2,
-    circleStrokeColor: 'white',
-    circleRadius: 8,
-    circlePitchAlignment: 'map',
-  },
-  singlePoint: {
-    circleColor: 'green',
-    circleOpacity: 0.84,
-    circleStrokeWidth: 2,
-    circleStrokeColor: 'white',
-    circleRadius: 5,
-    circlePitchAlignment: 'map',
-  },
-  clusteredPoints: {
-    circlePitchAlignment: 'map',
-    circleColor: Mapbox.StyleSheet.source(
-      [
-        [25, 'yellow'],
-        [50, 'red'],
-        [75, 'blue'],
-        [100, 'orange'],
-        [300, 'pink'],
-        [750, 'white'],
-      ],
-      'point_count',
-      Mapbox.InterpolationMode.Exponential,
-    ),
-
-    circleRadius: Mapbox.StyleSheet.source(
-      [[0, 15], [100, 20], [750, 30]],
-      'point_count',
-      Mapbox.InterpolationMode.Exponential,
-    ),
-
-    circleOpacity: 0.84,
-    circleStrokeWidth: 2,
-    circleStrokeColor: 'white',
-  },
-  clusterCount: {
-    textField: '{point_count}',
-    textSize: 12,
-    textPitchAlignment: 'map',
+  me: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'lightblue',
+    transform: [{ scale: 0.7 }],
   },
 })
