@@ -14,7 +14,6 @@ import ScanQRCode        from './modules/challenge/ScanQRCode'
 import InsideVenue       from './modules/insideVenue/InsideVenue'
 import UserProfile       from './modules/insideVenue/UserProfile'
 import SignIn            from './modules/login/ui/SignIn'
-import oauthAuthorize    from './modules/login/oauthAuthorize'
 
 Meteor.connect(`ws://${Config.SERVER_URL}/websocket`)
 
@@ -113,7 +112,6 @@ export default class App extends React.PureComponent {
             <Route path="/chat/:roomId"           component={Chat} />
             <Route path="/show-qrcode"            component={DisplayUniqueCode} />
             <Route path="/scan"                   component={ScanQRCode} />
-            <Route path="authorize" function={oauthAuthorize} />
             {!!user.venueOsmId &&
               <Route render={() => <InsideVenue venueOsmId={user.venueOsmId} />} />
             }

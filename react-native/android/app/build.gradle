@@ -88,7 +88,7 @@ apply from: "../../node_modules/react-native/react.gradle"
  * Upload all the APKs to the Play Store and people will download
  * the correct one based on the CPU architecture of their device.
  */
-def enableSeparateBuildPerCPUArchitecture = false
+def enableSeparateBuildPerCPUArchitecture = true
 
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
@@ -103,10 +103,11 @@ android {
         applicationId "com.enzym_proto"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 5
-        versionName "proto-0.5"
+        versionCode 6
+        versionName "proto-0.6"
+        multiDexEnabled true
         ndk {
-            abiFilters "armeabi-v7a", "x86"
+            //abiFilters "armeabi-v7a", "x86"
         }
     }
     signingConfigs {
@@ -184,7 +185,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 
 
 dependencies {
-    compile project(':react-native-svg')
+    implementation project(':react-native-svg')
     implementation (project(':react-native-camera'))
     implementation project(':react-native-firebase')
     implementation project(':react-native-config')
@@ -195,6 +196,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-base:15.0.1'
     implementation 'com.google.firebase:firebase-core:16.0.1'
     implementation "com.google.firebase:firebase-messaging:17.1.0"
+    implementation 'com.facebook.android:facebook-login:4.34.0'
+    implementation 'com.android.support:multidex:1.0.3'
+
 }
 
 // Run this once to be able to run the application with BUCK
