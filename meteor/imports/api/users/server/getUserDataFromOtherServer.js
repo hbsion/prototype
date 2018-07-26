@@ -7,7 +7,7 @@ export default (userId) => {
     'referrers.getForPrototype',
     {email: localUser.email()},
     (err, userData) => {
-      console.log(err)
+      //console.log(err)
       if(!userData) return
       const {
         landingPageUserId, username, ethAddress, referringToken, isAmbassador, profile

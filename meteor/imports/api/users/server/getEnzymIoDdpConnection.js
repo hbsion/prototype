@@ -7,8 +7,8 @@ export default () => {
   ddpConnection = DDP.connect(uri)
   DDP.onReconnect(connection => {
     connection.call('login', {user: {username}, password}, (err, res) => {
-      console.log(err)
-      console.log(res)
+      //console.log(err)
+      //console.log(res)
     })
   })
 }
