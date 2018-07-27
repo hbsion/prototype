@@ -30,7 +30,7 @@ export default class MainMapContainer extends Component {
       venues:    undefined,
     }
   }
-  componentDidMount() {
+  async componentDidMount() {
     this.requestGeolocationPermission()
   }
   render() {
@@ -83,18 +83,18 @@ export default class MainMapContainer extends Component {
     }
   }
   enterVenue = (venue) => () => {
-    const id = venue.id.split('/')[1]
+    const id = venue.properties.id.split('/')[1]
+    venuesCache.setItem(id, venue)
     Meteor.call('users.enterInsideVenue', {venueOsmId: id}, (err) => {
       if(err) {
         console.log(err)
-      } else {
-        venuesCache.setItem(id, venue)
       }
     })
   }
   getPosition = () => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        console.log("position", position)
         this.setState({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
@@ -130,11 +130,7 @@ export default class MainMapContainer extends Component {
       await venuesCache.setItem(cacheItemName, {loading: true, data: {}, timeout: Date.now() + (TIMEOUT + 5) * 1000})
       console.log(query)
       try {
-        const data = await (
-          fetch(query)
-            .then(res => res.json())
-            .catch(error => console.error(error))
-        )
+        const data = await (await fetch(query)).json()
         await venuesCache.setItem(cacheItemName, {loading: false, data})
       } catch(error) {
         console.log(error)
