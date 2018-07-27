@@ -31,11 +31,13 @@ export default class Banner extends React.Component {
 
     return (
       <View style={styles.banner}>
-        <View style={{flex:1, backgroundColor:"#ccc", justifyContent: 'center', alignItems:"center",}}>
-          <View style={{width:gaugeSize, height:"10%", backgroundColor:"#000"}}>
-          </View>
+        <View style={{flex:1}}>
         </View>
-        <View style={{flex:3, backgroundColor:"#fff"}}>
+        <View style={{flex:3}}>
+          <View style={{flex:1, justifyContent:"center", borderWidth:2, borderColor:"#ccc", padding:2}}>
+            <View style={{width:gaugeSize, height:"100%", backgroundColor:"#000"}}>
+            </View>
+          </View>
         </View>
       </View>
     )
@@ -45,8 +47,8 @@ export default class Banner extends React.Component {
 const styles = StyleSheet.create({
   banner: {
     padding: 10,
-    backgroundColor: '#87CEFA',
-    height: 100,
+    backgroundColor: 'rgba(0,0,0,0)',
+    height: 60,
     flexDirection: 'row',
 
   },
