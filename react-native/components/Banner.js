@@ -4,7 +4,6 @@ import {
   View,
   StyleSheet,
   Text,
-  StatusBar
 } from 'react-native'
 import { Icon } from 'react-native-elements'
 import { purple } from '../utils/colors'
@@ -15,24 +14,28 @@ export default class Banner extends React.Component {
     nbOfTokens: PropTypes.number.isRequired,
   }
   static defaultProps = {
-    nbOfTokens: 0,
+    nbOfTokens: 75,
   }
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      nbOfTokens: this.props.nbOfTokens
+    }
+  }
+
   render() {
-    const { nbOfTokens } = this.props
+    let nbOfTokens = this.state.nbOfTokens
+    if (nbOfTokens > 100) nbOfTokens = 100
+    const gaugeSize = nbOfTokens+"%"
+
     return (
       <View style={styles.banner}>
-        <View>
-          <StatusBar translucent backgroundColor={purple} {...this.props} />
+        <View style={{flex:1, backgroundColor:"#ccc", justifyContent: 'center', alignItems:"center",}}>
+          <View style={{width:gaugeSize, height:"10%", backgroundColor:"#000"}}>
+          </View>
         </View>
-        <View style={styles.title}>
-          <Icon
-            name='sc-telegram'
-            type='evilicon'
-            color='blue'
-          />
-          <Text style={styles.messageBoxTitleText}>
-            {nbOfTokens} ZYMs
-          </Text>
+        <View style={{flex:3, backgroundColor:"#fff"}}>
         </View>
       </View>
     )
@@ -41,20 +44,11 @@ export default class Banner extends React.Component {
 
 const styles = StyleSheet.create({
   banner: {
-    marginTop: 10,
     padding: 10,
     backgroundColor: '#87CEFA',
-    height : 100,
-    flexDirection: 'row'
+    height: 100,
+    flexDirection: 'row',
+
   },
-  title: {
-    justifyContent: 'center',
-    flexDirection: 'row'
-  },
-  messageBoxTitleText:{
-    fontWeight:'bold',
-    color:'#fff',
-    fontSize:20,
-    height : 20
-  },
+
 })
