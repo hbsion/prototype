@@ -1,8 +1,8 @@
 import MapboxGL     from '@mapbox/react-native-mapbox-gl'
 import React        from 'react'
-import {Button, StyleSheet, Alert, Text, View} from 'react-native'
+import {StyleSheet, Text, View} from 'react-native'
 
-export default function VenuesLayer({canEnter, enterVenue, venues}){
+export default function VenuesLayer({canEnter, selectVenue, venues}){
   if(!venues) return null
   const enterableOrNonEmptyVenues = {...venues, features: []}
   const otherVenues = {...venues, features: []}
@@ -18,7 +18,7 @@ export default function VenuesLayer({canEnter, enterVenue, venues}){
       id="venues"
       key="venues"
       shape={otherVenues}
-      onPress={(event) => Alert.alert(event.nativeEvent.payload.properties.name)}>
+      onPress={(event) => selectVenue(event.nativeEvent.payload)}>
       <MapboxGL.CircleLayer
         id="venuesPoints"
         belowLayerID="userSinglePoint"
@@ -32,6 +32,7 @@ export default function VenuesLayer({canEnter, enterVenue, venues}){
           key={id}
           id={id}
           coordinate={geometry.coordinates}
+          onSelected={() => selectVenue({geometry, id, properties})}
         >
           {properties.count &&
             <View style={_canEnter ? styles.canEnter : styles.annotationContainer}>
@@ -44,14 +45,6 @@ export default function VenuesLayer({canEnter, enterVenue, venues}){
               <View style={styles.emptyVenue} />
             </View>
           }
-          <MapboxGL.Callout title={properties.name} style={styles.popup}>
-            <View>
-              <Text>{properties.name}</Text>
-              {_canEnter &&
-                <Button title="enter" onPress={enterVenue({geometry, id, properties})}>enter</Button>
-              }
-            </View>
-          </MapboxGL.Callout>
         </MapboxGL.PointAnnotation>
       )
     })

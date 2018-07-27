@@ -10,6 +10,7 @@ import fakeUsers    from './fakeUsers'
 import isInsideBbox from './isInsideBbox'
 import UsersLayer   from './UsersLayer'
 import VenuesLayer  from './VenuesLayer'
+import VenueDetails from './VenueDetails'
 
 MapboxGL.setAccessToken(Config.MAPBOX_KEY)
 
@@ -61,6 +62,7 @@ export default class MainMap extends React.Component {
             userTrackingMode={fakeMode ? MapboxGL.UserTrackingModes.None : MapboxGL.UserTrackingModes.FollowWithHeading}
             onRegionDidChange={this.handleRegionDidChange}
             onUserLocationUpdate={this.handleUserLocationUpdate}
+            onPress={() => this.handleSelectVenue(null)}
             style={styles.container}
           >
             {fakeMode &&
@@ -82,9 +84,11 @@ export default class MainMap extends React.Component {
               {...{venues, styles}}
               canEnter={this.canEnter}
               enterVenue={this.props.enterVenue}
+              selectVenue={this.handleSelectVenue}
             />
 
           </MapboxGL.MapView>
+          <VenueDetails venue={this.state.selectedVenue} />
           <TouchableOpacity style={styles.button} onPress={() => this.setState({fakeMode: !fakeMode})}>
             <Text>{fakeMode ? 'Real mode' : 'Fake mode'}</Text>
           </TouchableOpacity>
@@ -97,6 +101,10 @@ export default class MainMap extends React.Component {
     const userLat = fakeMode ? center.lat : location.latitude
     const userLon = fakeMode ? center.lon : location.longitude
     return Math.abs(lat - userLat) < 0.0001 && Math.abs(lon - userLon) < 0.0001
+  }
+  handleSelectVenue = (venue) => {
+    console.log(venue)
+    this.setState({selectedVenue: venue})
   }
   handleUserLocationUpdate = ({timestamp, coords}) => {
     const {speed, heading, accuracy, altitude, latitude, longitude} = coords
