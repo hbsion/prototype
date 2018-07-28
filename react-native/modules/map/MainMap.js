@@ -79,12 +79,15 @@ export default class MainMap extends React.Component {
             <VenuesLayer
               {...{venues, styles}}
               canEnter={this.canEnter}
-              enterVenue={this.props.enterVenue}
               selectVenue={this.handleSelectVenue}
             />
 
           </MapboxGL.MapView>
-          <VenueDetails venue={this.state.selectedVenue} />
+          <VenueDetails
+            canEnter={this.canEnter}
+            enterVenue={this.props.enterVenue}
+            venue={this.state.selectedVenue}
+          />
           <TouchableOpacity style={styles.button} onPress={() => this.setState({fakeMode: !fakeMode})}>
             <Text>{fakeMode ? 'Real mode' : 'Fake mode'}</Text>
           </TouchableOpacity>
