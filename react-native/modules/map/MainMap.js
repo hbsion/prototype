@@ -48,10 +48,6 @@ export default class MainMap extends React.Component {
     console.log(latitude, longitude)
     return (
       <View style={styles.container}>
-        <View style={{flex: 0.1}}>
-          <Text>Latitude: {lat}</Text>
-          <Text>Longitude: {lon}</Text>
-        </View>
         <View style={{flex: 0.9}}>
           <MapboxGL.MapView
             ref={ref => this.mapView = ref}
@@ -92,6 +88,10 @@ export default class MainMap extends React.Component {
           <TouchableOpacity style={styles.button} onPress={() => this.setState({fakeMode: !fakeMode})}>
             <Text>{fakeMode ? 'Real mode' : 'Fake mode'}</Text>
           </TouchableOpacity>
+        </View>
+        <View style={{flex: 0.1}}>
+          <Text>Latitude: {lat}</Text>
+          <Text>Longitude: {lon}</Text>
         </View>
       </View>
     )

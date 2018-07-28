@@ -12,8 +12,8 @@ export default function Home({user}) {
   }
   return (
     <View style={{flex: 1}}>
-      <BannerContainer />
       <MainMapContainer user={user} />
+        <BannerContainer />
       <Button title="logout" onPress={() => Meteor.logout()}>logout</Button>
     </View>
   )
