@@ -1,6 +1,6 @@
 import PropTypes             from 'prop-types'
 import React                 from 'react'
-import { Alert, AppState, Linking }   from 'react-native'
+import { Alert, AppState, Linking, View }   from 'react-native'
 import Config                from 'react-native-config'
 import firebase              from 'react-native-firebase'
 import Meteor, {Accounts, withTracker} from 'react-native-meteor'
@@ -14,6 +14,7 @@ import ScanQRCode        from './modules/challenge/ScanQRCode'
 import InsideVenue       from './modules/insideVenue/InsideVenue'
 import UserProfile       from './modules/insideVenue/UserProfile'
 import SignIn            from './modules/login/ui/SignIn'
+import Spinner from 'react-native-loading-spinner-overlay'
 
 Meteor.connect(`ws://${Config.SERVER_URL}/websocket`)
 
@@ -27,12 +28,19 @@ Meteor.connect(`ws://${Config.SERVER_URL}/websocket`)
     user,
   }
 })
+
+
 export default class App extends React.PureComponent {
   static propTypes = {
     connected: PropTypes.bool.isRequired,
     user:      PropTypes.object,
   }
   appState = AppState.currentState
+
+  constructor(props) {
+    super(props)
+    this.state = {isLoading:true}
+  }
 
   async componentDidMount() {
     Linking.getInitialURL().then((url) => {
@@ -83,7 +91,18 @@ export default class App extends React.PureComponent {
       // User has rejected permissions
       console.log("rejected", error)
     }
+
+    if (this.state.isLoading) {
+      setTimeout(() => {
+        this.setState({
+          isLoading: !this.state.isLoading
+        })
+      }, 500)
+    }
+    
   }
+
+
   componentWillUnmount() {
     Meteor.call('users.leaveVenue')
     AppState.removeEventListener('change', this._handleAppStateChange)
@@ -92,7 +111,12 @@ export default class App extends React.PureComponent {
     this.notificationListener()
     this.notificationDisplayedListener()
   }
+
   render() {
+    if (this.state.isLoading) return (<View style={{ flex: 1 }}>
+        <Spinner visible={this.state.isLoading} textContent={"Chargement..."} animation="fade" textStyle={{color: '#FFF'}} overlayColor="#DF419A" />
+      </View>)
+
     const {connected, user} = this.props
     if(!connected) {
       return <Disconnected {...{connected}} />
