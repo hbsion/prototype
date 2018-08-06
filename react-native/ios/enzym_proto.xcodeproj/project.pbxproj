@@ -43,6 +43,7 @@
 		F097678F38524D49990A8E9E /* libRNCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A99F9605F42A4E5495DFB7F8 /* libRNCamera.a */; };
 		C98D316E8D8E499ABAAF6AD5 /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA32636F1ED547E395CDC0C7 /* libRNSVG.a */; };
 		0BD79D4F713B4A2EA4CA1451 /* libRNSVG-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D6C182DCB24849F49CF8149C /* libRNSVG-tvOS.a */; };
+		66DD50E0B2724C66BC960DC8 /* libRNSensors.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C4AE83CCB0464C8C557C65 /* libRNSensors.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -359,6 +360,12 @@
 		DB5658E156FC463CBD2A6F0C /* RNSVG.xcodeproj */ = {isa = PBXFileReference; name = "RNSVG.xcodeproj"; path = "../node_modules/react-native-svg/ios/RNSVG.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		DA32636F1ED547E395CDC0C7 /* libRNSVG.a */ = {isa = PBXFileReference; name = "libRNSVG.a"; path = "libRNSVG.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		D6C182DCB24849F49CF8149C /* libRNSVG-tvOS.a */ = {isa = PBXFileReference; name = "libRNSVG-tvOS.a"; path = "libRNSVG-tvOS.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		7EDC8A7C035B4586BD7B94AF /* RNSensors.xcodeproj */ = {isa = PBXFileReference; name = "RNSensors.xcodeproj"; path = "../node_modules/react-native-sensors/ios/RNSensors.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		97C4AE83CCB0464C8C557C65 /* libRNSensors.a */ = {isa = PBXFileReference; name = "libRNSensors.a"; path = "libRNSensors.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		A8DA2B0CA0524EFB87B7E7C5 /* RNGLModelView.xcodeproj */ = {isa = PBXFileReference; name = "RNGLModelView.xcodeproj"; path = "../node_modules/react-native-gl-model-view/ios/RNGLModelView.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		7D244D85F457414D937064EF /* libRNGLModelView.a */ = {isa = PBXFileReference; name = "libRNGLModelView.a"; path = "libRNGLModelView.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		4FEC2C4290B14663B99C08B1 /* RCT3DModel.xcodeproj */ = {isa = PBXFileReference; name = "RCT3DModel.xcodeproj"; path = "../node_modules/react-native-3d-model-view/ios/RCT3DModel.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		28CEB8EE13104008A625CA94 /* libRCT3DModel.a */ = {isa = PBXFileReference; name = "libRCT3DModel.a"; path = "libRCT3DModel.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -392,6 +399,8 @@
 				7E5CB4377864442B904255B2 /* libReactNativePermissions.a in Frameworks */,
 				F097678F38524D49990A8E9E /* libRNCamera.a in Frameworks */,
 				C98D316E8D8E499ABAAF6AD5 /* libRNSVG.a in Frameworks */,
+				66DD50E0B2724C66BC960DC8 /* libRNSensors.a in Frameworks */,
+				CC08CC33A4C449279056BFD4 /* libRNGLModelView.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -584,6 +593,8 @@
 				3316216A520D4D4BA30CFE67 /* ReactNativePermissions.xcodeproj */,
 				198EF0BF9E674C0BB21E30B6 /* RNCamera.xcodeproj */,
 				DB5658E156FC463CBD2A6F0C /* RNSVG.xcodeproj */,
+				7EDC8A7C035B4586BD7B94AF /* RNSensors.xcodeproj */,
+				A8DA2B0CA0524EFB87B7E7C5 /* RNGLModelView.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1216,6 +1227,12 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1224,6 +1241,8 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-sensors/ios",
+					"$(SRCROOT)/../node_modules/react-native-gl-model-view/ios",
 				);
 			};
 			name = Debug;
@@ -1250,6 +1269,9 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1258,6 +1280,8 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-sensors/ios",
+					"$(SRCROOT)/../node_modules/react-native-gl-model-view/ios",
 				);
 			};
 			name = Release;
@@ -1284,6 +1308,8 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-sensors/ios",
+					"$(SRCROOT)/../node_modules/react-native-gl-model-view/ios",
 				);
 			};
 			name = Debug;
@@ -1309,6 +1335,8 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-sensors/ios",
+					"$(SRCROOT)/../node_modules/react-native-gl-model-view/ios",
 				);
 			};
 			name = Release;
@@ -1344,6 +1372,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1352,6 +1382,8 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-sensors/ios",
+					"$(SRCROOT)/../node_modules/react-native-gl-model-view/ios",
 				);
 			};
 			name = Debug;
@@ -1387,6 +1419,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1395,6 +1429,8 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-sensors/ios",
+					"$(SRCROOT)/../node_modules/react-native-gl-model-view/ios",
 				);
 			};
 			name = Release;
@@ -1429,6 +1465,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1437,6 +1475,8 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-sensors/ios",
+					"$(SRCROOT)/../node_modules/react-native-gl-model-view/ios",
 				);
 			};
 			name = Debug;
@@ -1471,6 +1511,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1479,6 +1521,8 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-sensors/ios",
+					"$(SRCROOT)/../node_modules/react-native-gl-model-view/ios",
 				);
 			};
 			name = Release;
