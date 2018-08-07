@@ -18,7 +18,7 @@ export default class VenuesDetails extends React.Component {
     ]
     if(!venue) return null
     return (
-      <View style={{position: 'absolute', top: 0, bottom: 0, left: 0, width: 100, backgroundColor: 'white'}}>
+      <View style={styles.container}>
         <Text>{venue.properties.name}</Text>
         {canEnter(venue.geometry.coordinates) &&
           <Button title="enter" onPress={enterVenue(venue)}>enter</Button>
@@ -30,3 +30,14 @@ export default class VenuesDetails extends React.Component {
     )
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: 30,
+    bottom: 30,
+    left: 0,
+    width: 100,
+    backgroundColor: 'white'
+  },
+})

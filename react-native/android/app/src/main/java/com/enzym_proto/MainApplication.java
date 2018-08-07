@@ -3,6 +3,7 @@ package com.enzym_proto;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.corbt.keepawake.KCKeepAwakePackage;
 import com.horcrux.svg.SvgPackage;
 import org.reactnative.camera.RNCameraPackage;
 import io.invertase.firebase.RNFirebasePackage;
@@ -30,8 +31,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new SvgPackage(),
-            new RNCameraPackage(),
+          new SvgPackage(),
+          new RNCameraPackage(),
+          new KCKeepAwakePackage(),
           new RNFirebasePackage(),
           new ReactNativeConfigPackage(),
           new RCTMGLPackage(),

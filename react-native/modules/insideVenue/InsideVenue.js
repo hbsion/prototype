@@ -8,11 +8,11 @@ import venuesCache   from '/modules/cache/venues'
 import EnteringModal from './EnteringModal'
 import UserList      from './UserList'
 
-@withTracker(({venueOsmId}) => {
+@withTracker(({venueId}) => {
   console.log("inside")
-  Meteor.subscribe('users.insideVenue', venueOsmId)
+  Meteor.subscribe('users.insideVenue', venueId)
   const user  = Meteor.user()
-  const users = Meteor.collection('users').find({venueOsmId, _id: {$ne: user._id}})
+  const users = Meteor.collection('users').find({venueId, _id: {$ne: user._id}})
     .map((obj) => {
       const room = Meteor.collection('chat_rooms').findOne({
         userIds: {$all: [obj._id, user._id], $size: 2}
@@ -30,7 +30,7 @@ import UserList      from './UserList'
     ambassadorMode: user.ambassadorMode,
     isAmbassador:   user.isAmbassador,
     users,
-    venueOsmId,
+    venueId,
   }
 })
 @withRouter
@@ -39,7 +39,7 @@ export default class InsideVenue extends React.Component {
     ambassadorMode: PropTypes.bool.isRequired,
     history:        PropTypes.object.isRequired,
     isAmbassador:   PropTypes.bool.isRequired,
-    venueOsmId:     PropTypes.string.isRequired,
+    venueId:        PropTypes.string.isRequired,
     users:          PropTypes.array,
   }
   constructor(props) {
@@ -47,7 +47,7 @@ export default class InsideVenue extends React.Component {
     this.state = {
       entering: this.props.isAmbassador,
     }
-    venuesCache.getItem(props.venueOsmId)
+    venuesCache.getItem(props.venueId)
       .then(venue => {
         console.log(venue)
         if(!venue) {

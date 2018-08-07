@@ -4,40 +4,29 @@ import {
   View,
   StyleSheet,
   Text,
+  TouchableOpacity,
 } from 'react-native'
-import { Icon } from 'react-native-elements'
-import { purple } from '../utils/colors'
 
 
 export default class Banner extends React.Component {
   static propTypes = {
-    nbOfTokens: PropTypes.number.isRequired,
+    zyms: PropTypes.number.isRequired,
   }
-  static defaultProps = {
-    nbOfTokens: 75,
-  }
-
-  constructor(props) {
-    super(props)
-    this.state = {
-      nbOfTokens: this.props.nbOfTokens
-    }
-  }
-
   render() {
-    let nbOfTokens = this.state.nbOfTokens
-    if (nbOfTokens > 100) nbOfTokens = 100
-    const gaugeSize = nbOfTokens+"%"
-
+    const { zyms } = this.props
+    const percent = Math.min(100, zyms)
+    const gaugeSize = percent + "%"
     return (
       <View style={styles.banner}>
         <View style={{flex:1}}>
-          <Text>Profile</Text>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Me</Text>
+          </TouchableOpacity>
         </View>
         <View style={{flex:2}}>
           <View style={{flex:1, justifyContent:"center", borderWidth:3, borderColor:"#DF419A", padding:2}}>
             <View style={{width:gaugeSize, height:"100%", backgroundColor:"#FBD531", justifyContent:"center"}}>
-              <Text style={{textAlign:"right", marginRight:4}}>{nbOfTokens}</Text>
+              <Text style={{textAlign:"right", marginRight:4}}>{zyms}</Text>
             </View>
           </View>
         </View>
@@ -56,7 +45,10 @@ const styles = StyleSheet.create({
     top:0,
     left:0,
     width:"100%",
-
   },
-
+  buttonText: {
+    padding: 10,
+    width: 40,
+    backgroundColor: 'white',
+  }
 })

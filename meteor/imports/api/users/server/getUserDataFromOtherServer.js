@@ -1,11 +1,12 @@
-import meteor from 'meteor/meteor'
+import { Meteor } from 'meteor/meteor'
 import getEnzymIoDdpConnection from './getEnzymIoDdpConnection'
 
 export default (userId) => {
   const localUser = Meteor.users.findOne(userId)
+  if(!localUser.email()) throw new Meteor.Error(`User '${userId}' does not have an email`)
   const handle = getEnzymIoDdpConnection().call(
     'referrers.getForPrototype',
-    {email: localUser.email()},
+    {email: localUser.email().address},
     (err, userData) => {
       //console.log(err)
       if(!userData) return

@@ -3,6 +3,7 @@ import React                 from 'react'
 import { Alert, AppState, Linking, View }   from 'react-native'
 import Config                from 'react-native-config'
 import firebase              from 'react-native-firebase'
+import Spinner               from 'react-native-loading-spinner-overlay'
 import Meteor, {Accounts, withTracker} from 'react-native-meteor'
 import { NativeRouter, Route, Switch, BackButton, DeepLinking } from 'react-router-native'
 
@@ -14,17 +15,17 @@ import ScanQRCode        from './modules/challenge/ScanQRCode'
 import InsideVenue       from './modules/insideVenue/InsideVenue'
 import UserProfile       from './modules/insideVenue/UserProfile'
 import SignIn            from './modules/login/ui/SignIn'
-import Spinner from 'react-native-loading-spinner-overlay'
 
 Meteor.connect(`ws://${Config.SERVER_URL}/websocket`)
 
 @withTracker(() => {
   const user = Meteor.user()
-  Meteor.subscribe('users.me')
+  const handler = Meteor.subscribe('users.me')
   Meteor.subscribe('chat.myRooms')
   console.log("refresh")
   return {
     connected: Meteor.status().connected,
+    isLoading: !handler.ready(),
     user,
   }
 })
@@ -33,21 +34,13 @@ Meteor.connect(`ws://${Config.SERVER_URL}/websocket`)
 export default class App extends React.PureComponent {
   static propTypes = {
     connected: PropTypes.bool.isRequired,
+    isLoading: PropTypes.bool.isRequired,
     user:      PropTypes.object,
   }
   appState = AppState.currentState
-
-  constructor(props) {
-    super(props)
-    this.state = {isLoading:true}
-  }
+  state = {isLoading: true}
 
   async componentDidMount() {
-    Linking.getInitialURL().then((url) => {
-      if (url) {
-        console.log('Initial url is: ' + url)
-      }
-    })
     this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
       this._saveFcmToken(fcmToken)
     })
@@ -91,18 +84,14 @@ export default class App extends React.PureComponent {
       // User has rejected permissions
       console.log("rejected", error)
     }
-
-    if (this.state.isLoading) {
+    if(this.state.isLoading) {
       setTimeout(() => {
         this.setState({
-          isLoading: !this.state.isLoading
+          isLoading: this.props.isLoading
         })
-      }, 500)
+      }, 800)
     }
-    
   }
-
-
   componentWillUnmount() {
     Meteor.call('users.leaveVenue')
     AppState.removeEventListener('change', this._handleAppStateChange)
@@ -113,20 +102,22 @@ export default class App extends React.PureComponent {
   }
 
   render() {
-    if (this.state.isLoading) return (<View style={{ flex: 1 }}>
-        <Spinner visible={this.state.isLoading} textContent={"Chargement..."} animation="fade" textStyle={{color: '#FFF'}} overlayColor="#DF419A" />
-      </View>)
-
     const {connected, user} = this.props
-    if(!connected) {
-      return <Disconnected {...{connected}} />
-    }
-    if(!user) {
-      return <SignIn />
-    }
-    if(!user.venueOsmId) {
-      return <Home {...{user}} />
-    }
+    const { isLoading } = this.state
+    if (isLoading) return (
+      <View style={{ flex: 1 }}>
+        <Spinner
+          animation="fade"
+          overlayColor="#DF419A"
+          textContent={"Chargement..."}
+          textStyle={{color: '#FFF'}}
+          visible={true}
+        />
+      </View>
+    )
+    if(!connected)    return <Disconnected {...{connected}} />
+    if(!user)         return <SignIn />
+    if(!user.venueId) return <Home {...{user}} />
     return (
       <NativeRouter>
         <BackButton>
@@ -136,8 +127,8 @@ export default class App extends React.PureComponent {
             <Route path="/chat/:roomId"           component={Chat} />
             <Route path="/show-qrcode"            component={DisplayUniqueCode} />
             <Route path="/scan"                   component={ScanQRCode} />
-            {!!user.venueOsmId &&
-              <Route render={() => <InsideVenue venueOsmId={user.venueOsmId} />} />
+            {!!user.venueId &&
+              <Route render={() => <InsideVenue venueId={user.venueId} />} />
             }
           </Switch>
         </BackButton>

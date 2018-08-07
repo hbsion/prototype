@@ -185,6 +185,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 
 
 dependencies {
+    implementation project(':react-native-keep-awake')
     implementation project(':react-native-svg')
     implementation (project(':react-native-camera'))
     implementation project(':react-native-firebase')

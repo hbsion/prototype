@@ -6,6 +6,6 @@ Meteor.publish('users.me', function() {
   return Meteor.users.find(userId, {fields: Meteor.users.privateFields})
 })
 
-Meteor.publish('users.insideVenue', function(venueOsmId) {
-  return Meteor.users.find({venueOsmId}, {fields: Meteor.users.publicFields})
+Meteor.publish('users.insideVenue', function(venueId) {
+  return Meteor.users.find({venueId}, {fields: Meteor.users.publicFields})
 })

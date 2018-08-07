@@ -43,6 +43,7 @@
 		F097678F38524D49990A8E9E /* libRNCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A99F9605F42A4E5495DFB7F8 /* libRNCamera.a */; };
 		C98D316E8D8E499ABAAF6AD5 /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA32636F1ED547E395CDC0C7 /* libRNSVG.a */; };
 		0BD79D4F713B4A2EA4CA1451 /* libRNSVG-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D6C182DCB24849F49CF8149C /* libRNSVG-tvOS.a */; };
+		43A4D2F490D74E7BA1B01B54 /* libKCKeepAwake.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 852471D3CD8143868F91E7D2 /* libKCKeepAwake.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -359,6 +360,8 @@
 		DB5658E156FC463CBD2A6F0C /* RNSVG.xcodeproj */ = {isa = PBXFileReference; name = "RNSVG.xcodeproj"; path = "../node_modules/react-native-svg/ios/RNSVG.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		DA32636F1ED547E395CDC0C7 /* libRNSVG.a */ = {isa = PBXFileReference; name = "libRNSVG.a"; path = "libRNSVG.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		D6C182DCB24849F49CF8149C /* libRNSVG-tvOS.a */ = {isa = PBXFileReference; name = "libRNSVG-tvOS.a"; path = "libRNSVG-tvOS.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		8FC01CE118424126A6E9672D /* KCKeepAwake.xcodeproj */ = {isa = PBXFileReference; name = "KCKeepAwake.xcodeproj"; path = "../node_modules/react-native-keep-awake/ios/KCKeepAwake.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		852471D3CD8143868F91E7D2 /* libKCKeepAwake.a */ = {isa = PBXFileReference; name = "libKCKeepAwake.a"; path = "libKCKeepAwake.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -392,6 +395,7 @@
 				7E5CB4377864442B904255B2 /* libReactNativePermissions.a in Frameworks */,
 				F097678F38524D49990A8E9E /* libRNCamera.a in Frameworks */,
 				C98D316E8D8E499ABAAF6AD5 /* libRNSVG.a in Frameworks */,
+				43A4D2F490D74E7BA1B01B54 /* libKCKeepAwake.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -584,6 +588,7 @@
 				3316216A520D4D4BA30CFE67 /* ReactNativePermissions.xcodeproj */,
 				198EF0BF9E674C0BB21E30B6 /* RNCamera.xcodeproj */,
 				DB5658E156FC463CBD2A6F0C /* RNSVG.xcodeproj */,
+				8FC01CE118424126A6E9672D /* KCKeepAwake.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1224,6 +1229,7 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
 				);
 			};
 			name = Debug;
@@ -1258,6 +1264,7 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
 				);
 			};
 			name = Release;
@@ -1284,6 +1291,7 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
 				);
 			};
 			name = Debug;
@@ -1309,6 +1317,7 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
 				);
 			};
 			name = Release;
@@ -1352,6 +1361,7 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
 				);
 			};
 			name = Debug;
@@ -1395,6 +1405,7 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
 				);
 			};
 			name = Release;
@@ -1437,6 +1448,7 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
 				);
 			};
 			name = Debug;
@@ -1479,6 +1491,7 @@
 					"$(SRCROOT)/../node_modules/react-native-permissions/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-camera/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
+					"$(SRCROOT)/../node_modules/react-native-keep-awake/ios",
 				);
 			};
 			name = Release;

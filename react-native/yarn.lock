@@ -631,9 +631,33 @@
     component-type "^1.2.1"
     join-component "^1.1.0"
 
+"@turf/bearing@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@turf/bearing/-/bearing-6.0.1.tgz#8da5d17092e571f170cde7bfb2e5b0d74923c92d"
+  dependencies:
+    "@turf/helpers" "6.x"
+    "@turf/invariant" "6.x"
+
+"@turf/distance@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@turf/distance/-/distance-6.0.1.tgz#0761f28784286e7865a427c4e7e3593569c2dea8"
+  dependencies:
+    "@turf/helpers" "6.x"
+    "@turf/invariant" "6.x"
+
 "@turf/helpers@4.6.0":
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-4.6.0.tgz#12398733b8ae28420df6166fa44c7ee8ffd6414c"
+
+"@turf/helpers@6.x":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@turf/helpers/-/helpers-6.1.4.tgz#d6fd7ebe6782dd9c87dca5559bda5c48ae4c3836"
+
+"@turf/invariant@6.x":
+  version "6.1.2"
+  resolved "https://registry.yarnpkg.com/@turf/invariant/-/invariant-6.1.2.tgz#6013ed6219f9ac2edada9b31e1dfa5918eb0a2f7"
+  dependencies:
+    "@turf/helpers" "6.x"
 
 "@types/events@*":
   version "1.2.0"
@@ -6231,6 +6255,10 @@ react-native-invertible-scroll-view@^1.1.0:
     prop-types "^15.5.10"
     react-clone-referenced-element "^1.0.1"
     react-native-scrollable-mixin "^1.0.1"
+
+react-native-keep-awake@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-keep-awake/-/react-native-keep-awake-3.1.0.tgz#7a5ebdf1ccebc68c73cecf46c750a2698a07f1a7"
 
 react-native-lightbox@^0.7.0:
   version "0.7.0"

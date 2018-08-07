@@ -53,7 +53,7 @@ Schemas.User = new SimpleSchema({
   landingPageUserId:   {type: String,  optional: true},
   referringToken:      {type: String,  optional: true},
   username:            {type: String,  optional: true},
-  venueOsmId:          {type: String,  optional: true},
+  venueId:             {type: String,  optional: true},
   services:            {type: Object,  optional: true, blackbox: true},
   profile: {
     type: Schemas.UserProfile,
@@ -84,7 +84,7 @@ Meteor.users.publicFields = {
 Meteor.users.privateFields = {
   ambassadorMode: 1,
   isAmbassador:   1,
-  venueOsmId:     1,
+  venueId:        1,
 }
 
 Meteor.users.findOneByEmail = (address, options) => Meteor.users.findOne(
@@ -95,5 +95,8 @@ Meteor.users.findOneByEmail = (address, options) => Meteor.users.findOne(
 Meteor.users.helpers({
   email() {
     if(this.emails && this.emails.length > 0) return this.emails[0]
+  },
+  isInsideVenue() {
+    return !!this.venueId
   }
 })

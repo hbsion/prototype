@@ -3,6 +3,10 @@ import PropTypes    from 'prop-types'
 import React        from 'react'
 import {View, StyleSheet, Text, Button, Alert, TouchableOpacity} from 'react-native'
 import Config       from 'react-native-config'
+import KeepAwake    from 'react-native-keep-awake'
+import bearing      from '@turf/bearing'
+import distance     from '@turf/distance'
+import {point}      from '@turf/helpers'
 
 import citiesFr     from './citiesFr'
 import CitiesLayer  from './CitiesLayer'
@@ -42,17 +46,21 @@ export default class MainMap extends React.Component {
   }
   render() {
     const { latitude, longitude, venues } = this.props
-    const { center, fakeMode } = this.state
+    const { center, fakeMode, zoom } = this.state
     const lat = fakeMode || !latitude ? this.fakeCenter.lat : latitude
     const lon = fakeMode || !longitude ? this.fakeCenter.lon : longitude
     console.log(latitude, longitude)
+    const userPoint = point([longitude, latitude])
+    const centerPoint = point([center.lon, center.lat])
     return (
       <View style={styles.container}>
+        <KeepAwake />
         <View style={{flex: 0.9}}>
           <MapboxGL.MapView
             ref={ref => this.mapView = ref}
             styleURL={MapboxGL.StyleURL.Street}
             zoomLevel={17}
+            pitchEnabled={false}
             centerCoordinate={[lon, lat]}
             showUserLocation={true}
             userTrackingMode={fakeMode ? MapboxGL.UserTrackingModes.None : MapboxGL.UserTrackingModes.FollowWithHeading}
@@ -95,6 +103,7 @@ export default class MainMap extends React.Component {
         <View style={{flex: 0.1}}>
           <Text>Latitude: {lat}</Text>
           <Text>Longitude: {lon}</Text>
+          <Text>{distance(userPoint, centerPoint)} {bearing(userPoint, centerPoint)}</Text>
         </View>
       </View>
     )
@@ -118,9 +127,10 @@ export default class MainMap extends React.Component {
   }
   handleRegionDidChange = async () => {
     const [lon, lat] = await this.mapView.getCenter()
-    this.setState({center: {lon, lat}})
-    const [[e, n], [w, s]] = await this.mapView.getVisibleBounds()
     const zoom = await this.mapView.getZoom()
+    this.setState({center: {lon, lat}, zoom})
+    const [[e, n], [w, s]] = await this.mapView.getVisibleBounds()
+    this.setState({zoom})
     if(zoom < 14) {
       this.props.hideVenues()
       return
@@ -128,6 +138,7 @@ export default class MainMap extends React.Component {
     const displayable = cities.features.filter(({geometry: {coordinates: [lon, lat]}}) => (
       isInsideBbox({lat, lon}, {s: s - 0.2, w: w - 0.2, n: n + 0.2, e: e + 0.2})
     ))
+    console.log(displayable)
     if(displayable.length) {
       this.props.getVenues(displayable[0].properties.name, s, w, n, e)
     }

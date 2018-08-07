@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0-beta.42",
+    "@turf/distance": "^6.0.1",
+    "@turf/midpoint": "^5.1.5",
     "firebase-admin": "^5.13.0",
     "meteor-node-stubs": "^0.3.2",
     "simpl-schema": "^1.5.0",

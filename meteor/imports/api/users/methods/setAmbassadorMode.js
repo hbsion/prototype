@@ -10,6 +10,8 @@ export default new ValidatedMethod({
     const user = Meteor.user()
     console.log(mode, user._id)
     if(!user._id || !user.isAmbassador) return
+    if(mode && !user.isInsideVenue()) return
+    if(mode === user.ambassadorMode) return
     Meteor.users.update(user._id, {$set: {
       ambassadorMode: mode
     }})

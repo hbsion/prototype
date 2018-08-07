@@ -83,11 +83,12 @@ export default class MainMapContainer extends Component {
     }
   }
   enterVenue = (venue) => () => {
-    const id = venue.properties.id.split('/')[1]
-    venuesCache.setItem(id, venue)
-    Meteor.call('users.enterInsideVenue', {venueOsmId: id}, (err) => {
+    const id = venue.properties.id
+    Meteor.call('users.enterInsideVenue', {venueOsmId: id}, (err, venueId) => {
       if(err) {
         console.log(err)
+      } else {
+        venuesCache.setItem(venueId, venue)
       }
     })
   }
