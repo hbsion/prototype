@@ -1,11 +1,13 @@
 import {Challenges} from './Challenges'
 
-export default (ambassador) => {
+export default (ambassadorId) => {
   Challenges.update({
-    state: {$in: ['waiting', 'started']},
+    cancelledAt: {$exists: false},
+    declinedAt:  {$exists: false},
+    finishedAt:  {$exists: false},
     players: {
       $elemMatch: {
-        userId:  ambassador._id,
+        userId:  ambassadorId,
         role:    'unmoving',
         subrole: 'ambassador'
       }
@@ -14,5 +16,7 @@ export default (ambassador) => {
     $set: {
       cancelledAt: new Date()
     }
+  }, {
+    multi: true
   })
 }

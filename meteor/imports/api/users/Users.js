@@ -4,10 +4,6 @@ import SimpleSchema from 'simpl-schema'
 const Schemas = {}
 
 Schemas.UserProfile = new SimpleSchema({
-  referrerToken: {
-    type:     String,
-    optional: true,
-  },
   contest: {
     type: Boolean,
     optional: true,
@@ -16,12 +12,12 @@ Schemas.UserProfile = new SimpleSchema({
     type: String,
     optional: true
   },
-  region: {
-    type: String,
-    optional: true
-  },
   country: {
     type: Date,
+    optional: true
+  },
+  fcmToken: {
+    type: String,
     optional: true
   },
   geoloc: {
@@ -29,6 +25,14 @@ Schemas.UserProfile = new SimpleSchema({
     optional: true
   },
   lang : {
+    type: String,
+    optional: true
+  },
+  referrerToken: {
+    type:     String,
+    optional: true,
+  },
+  region: {
     type: String,
     optional: true
   },

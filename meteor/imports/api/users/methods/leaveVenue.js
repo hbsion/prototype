@@ -12,7 +12,7 @@ export default new ValidatedMethod({
     const user = Meteor.user()
     if(!user || !user.venueId) return
     console.log("leaveVenue", user._id)
-    Meteor.users.update(user._id, {$set: {venueId: null}})
+    Meteor.users.update(user._id, {$set: {venueId: null, ambassadorMode: false}})
     const venue = Venues.findOne(user.venueId)
     Venues.update(venue._id, {$set: {
       count: Meteor.users.find({venueId: venue._id}).count(),

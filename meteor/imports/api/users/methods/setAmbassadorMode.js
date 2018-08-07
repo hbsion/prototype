@@ -39,10 +39,10 @@ export default new ValidatedMethod({
       })
       console.log(nearUsers.count())
       nearUsers.forEach(nearUser => {
-        createAmbassadorChallenge(user, nearUser)
+        createAmbassadorChallenge(user._id, nearUser._id)
       })
     } else {
-      cancelAllAmbassadorChallenges(user)
+      cancelAllAmbassadorChallenges(user._id)
     }
   }
 })

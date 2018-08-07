@@ -1,9 +1,9 @@
-import firebaseAdmin     from 'firebase-admin'
 import {ValidatedMethod} from 'meteor/mdg:validated-method'
 import SimpleSchema      from 'simpl-schema'
 
-import {ChatRooms}    from '/imports/api/chat_rooms/ChatRooms'
-import {ChatMessages} from '../ChatMessages'
+import {ChatRooms}     from '/imports/api/chat_rooms/ChatRooms'
+import newMessageNotif from '../notifications/newMessage'
+import {ChatMessages}  from '../ChatMessages'
 
 export default new ValidatedMethod({
   name: 'chat.send',
@@ -19,31 +19,8 @@ export default new ValidatedMethod({
     const room = ChatRooms.findOne(roomId)
     if(room.userIds.indexOf(this.userId) === -1) throw new Meteor.Error('WRONG_ROOM')
     ChatMessages.insert({_id, acks: [], userId, roomId, text})
-    const userIds = Meteor.users.find(
-      {_id: {$in: room.otherUserIds(userId)}, 'profile.appState': {$ne: 'active'}}
-    )
-    .map(async ({_id, profile: {fcmToken}}) => {
-      console.log("notify", _id, fcmToken)
-      if(fcmToken) {
-        try {
-          const response = await firebaseAdmin.messaging().send({
-            android: {
-              notification: {
-                //tag: 'chat',
-              },
-              priority:    'high',
-              ttl:         1000 * 60 * 60,
-            },
-            notification: {
-              body:  `Un message en attente`,
-              title: 'Nouveau message',
-            },
-            token: fcmToken,
-          })
-        } catch(error) {
-          console.log('Error sending message:', error);
-        }
-      }
+    newMessageNotif({
+      query: {_id: {$in: room.otherUserIds(userId)}}
     })
   }
 })

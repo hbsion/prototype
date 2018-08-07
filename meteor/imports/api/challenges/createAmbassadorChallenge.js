@@ -1,32 +1,36 @@
-import {Challenges} from './Challenges'
+import newAmbassadorNotif from './notifications/newAmbassador'
+import {Challenges}       from './Challenges'
 
-export default (ambassador, user) => {
+export default (ambassadorId, userId) => {
   const challenge = Challenges.findOne({
-    state: {$in: ['waiting', 'started']},
+    cancelledAt: {$exists: false},
+    declinedAt:  {$exists: false},
+    finishedAt:  {$exists: false},
     $and: [
       {players: {
         $elemMatch: {
-          userId:  ambassador._id,
+          userId:  ambassadorId,
           role:    'unmoving',
           subrole: 'ambassador',
         }
       }},
       {players: {
         $elemMatch: {
-          userId: user._id,
+          userId,
           role:   'moving',
         }
       }},
     ]
   }, {fields: {}})
   if(challenge) {
-    console.log("Challenge already exists (createAmbassadorChallenge)", ambassador._id, user._id)
+    console.log("Challenge already exists (createAmbassadorChallenge)", ambassadorId, userId)
     return
   }
-  Challenges.insert({
+  const challengeId = Challenges.insert({
     players: [
-      {userId: ambassador._id, role: 'unmoving', subrole: 'ambassador'},
-      {userId: user._id,       role: 'moving'},
+      {userId: ambassadorId, role: 'unmoving', subrole: 'ambassador', acceptedAt: new Date()},
+      {userId: userId,       role: 'moving'},
     ]
   })
+  newAmbassadorNotif(challengeId, userId)
 }
