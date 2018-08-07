@@ -1,4 +1,5 @@
 import {Mongo}      from 'meteor/mongo'
+import {Random}     from 'meteor/random'
 import SimpleSchema from 'simpl-schema'
 
 import stateFromDates          from './stateFromDates'
@@ -37,6 +38,10 @@ Challenges.schema = new SimpleSchema({
       return new Date()
     }
   },
+  validationCode: {
+    type: String,
+    autoValue: () => Random.secret()
+  }
 })
 
 Challenges.attachSchema(Challenges.schema)
@@ -47,7 +52,18 @@ Challenges.deny({
   remove: () => true,
 })
 
-Challenges.publicFields = {}
+Challenges.privateFields = {
+  players:     1,
+  cancelledAt: 1,
+  declinedAt:  1,
+  finishedAt:  1,
+  startedAt:   1,
+  createdAt:   1,
+}
+
+Challenges.playerOneFields = {
+  validationCode: 1,
+}
 
 Challenges.helpers({
   accept(userId) {
@@ -129,7 +145,19 @@ Challenges.helpers({
     })
     this.declinedAt = declinedAt
   },
+  isValidatingUser(userId) {
+    return this.players.findIndex((p) => p.userId === userId) === 1
+  },
   state() {
     return stateFromDates(this)
+  },
+  validate() {
+    Challenges.update({
+      _id: this._id,
+    }, {
+      $set: {
+        finishedAt: new Date()
+      }
+    })
   }
 })

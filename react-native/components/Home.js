@@ -4,6 +4,7 @@ import Meteor                from 'react-native-meteor'
 import { Redirect } from 'react-router-native'
 
 import MainMapContainer  from '/modules/map/MainMapContainer'
+import ChallengeLayer    from '/modules/challenge/ChallengeLayer'
 import BannerContainer   from './BannerContainer'
 
 export default function Home({user}) {
@@ -15,6 +16,7 @@ export default function Home({user}) {
       <MainMapContainer user={user} />
       <BannerContainer />
       <Button title="logout" onPress={() => Meteor.logout()}>logout</Button>
+      <ChallengeLayer />
     </View>
   )
 }

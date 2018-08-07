@@ -11,35 +11,33 @@ import { withRouter } from 'react-router-native'
 import logo from '/utils/logo.png'
 
 @withTracker(() => {
-  const userId = Meteor.userId()
-  Meteor.subscribe('uniqueCodes.getOne')
+  Meteor.subscribe('challenges.started')
+  const startedChallenge = Meteor.collection('challenges').findOne()
   return {
-    uniqueCode: Meteor.collection('unique_codes').findOne({userId})
+    startedChallenge,
   }
 })
 @withRouter
 export default class DisplayUniqueCode extends React.Component {
   static propTypes = {
-    history:    PropTypes.object.isRequired,
-    uniqueCode: PropTypes.object,
+    history:          PropTypes.object.isRequired,
+    startedChallenge: PropTypes.object,
   }
-  componentDidUpdate() {
-    if(this.props.uniqueCode && (
-      this.props.uniqueCode.expired ||
-      this.props.uniqueCode.used
-    )) {
+  componentDidUpdate(previousProps) {
+    if(!this.props.startedChallenge && previousProps.startedChallenge) {
       this.props.history.goBack()
     }
   }
   render() {
-    const { uniqueCode } = this.props
-    if(!uniqueCode) {
+    const { startedChallenge } = this.props
+    if(!startedChallenge) {
       return <View><Text>Chargement...</Text></View>
     }
+    const validationCode = startedChallenge && startedChallenge.validationCode
     return (
       <View style={styles.container}>
         <QRCode
-          value={uniqueCode.value}
+          value={validationCode}
           logo={logo}
           size={250}
           ecl="H"

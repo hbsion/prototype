@@ -22,7 +22,7 @@ export default class ScanQRCode extends React.Component {
     )
   }
   onSuccess(e) {
-    Meteor.call('uniqueCodes.consume', {value: e.data}, (err) => {
+    Meteor.call('challenges.validate', {code: e.data}, (err) => {
       if(err) {
         console.log(err)
       } else {
