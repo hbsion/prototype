@@ -35,7 +35,4 @@ Countries.deny({
   remove: () => true,
 })
 
-Countries.publicFields = {
-  name:  1,
-  osmId: 1,
-}
+Countries.publicFields = {}

@@ -6,6 +6,13 @@ import {Cities}      from '/imports/api/cities/Cities'
 import {Countries}   from '/imports/api/countries/Countries'
 
 export const Venues = new Mongo.Collection('venues')
+Venues.rawDatabase().collection('venues').createIndex({location: '2dsphere'})
+
+const GeoJSON = new SimpleSchema({
+  type:            {type: String, defaultValue: 'Point'},
+  coordinates:     {type: Array, minCount: 2, maxCount: 2},
+  'coordinates.$': Number,
+})
 
 Venues.schema = new SimpleSchema({
   osmId:               {type: SimpleSchema.Integer},
@@ -13,7 +20,7 @@ Venues.schema = new SimpleSchema({
   count:               {type: SimpleSchema.Integer, min: 0},
   amenity:             {type: String, optional: true},
   cityId:              {type: String, optional: true},
-  lat:                 {type: Number, optional: true},
+  location:            {type: GeoJSON, optional: true},
   lon:                 {type: Number, optional: true},
   mustUpdateOsm:       {type: Boolean, defaultValue: true},
   name:                {type: String, optional: true},
@@ -94,8 +101,9 @@ Venues.helpers({
         venueCount:  1,
       })
     }
+    const location = {coordinates: [lon, lat]}
     Venues.update(this._id, {$set: {
-      lat, lon, cityId, name, amenity, mustUpdateOsm: false
+      location, cityId, name, amenity, mustUpdateOsm: false
     }})
   }
 })

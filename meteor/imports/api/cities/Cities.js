@@ -35,7 +35,4 @@ Cities.deny({
   remove: () => true,
 })
 
-Cities.publicFields = {
-  name:  1,
-  osmId: 1,
-}
+Cities.publicFields = {}
