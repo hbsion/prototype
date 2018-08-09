@@ -10,6 +10,8 @@ import UserList      from './UserList'
 
 @withTracker(({venueId}) => {
   console.log("inside")
+  Meteor.subscribe('challenges.started')
+  const startedChallenge = Meteor.collection('challenges').findOne()
   Meteor.subscribe('users.insideVenue', venueId)
   const user  = Meteor.user()
   const users = Meteor.collection('users').find({venueId, _id: {$ne: user._id}})
@@ -29,6 +31,7 @@ import UserList      from './UserList'
   return {
     ambassadorMode: user.ambassadorMode,
     isAmbassador:   user.isAmbassador,
+    startedChallenge,
     users,
     venueId,
   }
@@ -36,11 +39,12 @@ import UserList      from './UserList'
 @withRouter
 export default class InsideVenue extends React.Component {
   static propTypes = {
-    ambassadorMode: PropTypes.bool.isRequired,
-    history:        PropTypes.object.isRequired,
-    isAmbassador:   PropTypes.bool.isRequired,
-    venueId:        PropTypes.string.isRequired,
-    users:          PropTypes.array,
+    ambassadorMode:   PropTypes.bool.isRequired,
+    history:          PropTypes.object.isRequired,
+    isAmbassador:     PropTypes.bool.isRequired,
+    venueId:          PropTypes.string.isRequired,
+    startedChallenge: PropTypes.object,
+    users:            PropTypes.array,
   }
   constructor(props) {
     super(props)
@@ -73,12 +77,12 @@ export default class InsideVenue extends React.Component {
       <View style={ambassadorMode ? styles.ambassadorContainer : styles.container}>
         <Text>{venue.properties.name} ({users.length})</Text>
         <UserList {...{users}} />
-        <EnteringModal
+        {/*<EnteringModal
           setAmbassadorMode={this.setAmbassadorMode}
           handleBackButton={this.leaveVenue}
           isAmbassador={isAmbassador}
           isOpen={this.state.entering}
-        />
+        />*/}
         {this.canScan() && <Button title="scanner"  onPress={this.scan} />}
         {this.canFind() && <Button title="trouvé !" onPress={this.found} />}
         {isAmbassador &&
@@ -88,7 +92,7 @@ export default class InsideVenue extends React.Component {
       </View>
     )
   }
-  canFind = () => true
+  canFind = () => this.props.startedChallenge && !!this.props.startedChallenge.validationCode
   canScan = () => this.props.isAmbassador && this.props.ambassadorMode
   found = () => {
     this.props.history.push('/show-qrcode')

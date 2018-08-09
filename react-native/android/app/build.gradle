@@ -103,8 +103,8 @@ android {
         applicationId "com.enzym_proto"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 9
-        versionName "proto-0.9"
+        versionCode 10
+        versionName "proto-0.10"
         multiDexEnabled true
         ndk {
             //abiFilters "armeabi-v7a", "x86"

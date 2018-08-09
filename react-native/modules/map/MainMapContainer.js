@@ -4,9 +4,12 @@ import React, { Component }          from 'react'
 import { Alert, PermissionsAndroid } from 'react-native'
 import Meteor, {withTracker}         from 'react-native-meteor'
 
-import venuesCache  from '/modules/cache/venues'
-import isInsideBbox from './isInsideBbox'
-import MainMap      from './MainMap'
+import getCityVenues    from './helpers/getCityVenues'
+import getVisibleCities from './helpers/getVisibleCities'
+import isInsideBbox     from './helpers/isInsideBbox'
+import venuesCache      from '/modules/cache/venues'
+import MainMap          from './MainMap'
+
 
 @withTracker((...props) => {
   Meteor.subscribe('venues.count')
@@ -26,6 +29,7 @@ export default class MainMapContainer extends Component {
     this.state = {
       error:     null,
       latitude:  undefined,
+      loading:   false,
       longitude: undefined,
       venues:    undefined,
     }
@@ -35,7 +39,7 @@ export default class MainMapContainer extends Component {
   }
   render() {
     const { user } = this.props
-    const { latitude, longitude } = this.state
+    const { latitude, loading, longitude } = this.state
     const venues = !this.state.venues ? null : {
       ...this.state.venues,
       features: this.state.venues.features.map((feature) => {
@@ -55,12 +59,13 @@ export default class MainMapContainer extends Component {
     return (
       <MainMap
         enterVenue={this.enterVenue}
-        getVenues={this.getVenues}
+        getVisibleVenues={this.getVisibleVenues}
         hideVenues={this.hideVenues}
         latitude={latitude}
         longitude={longitude}
         userId={user._id}
         venues={venues}
+        loading={loading}
       />
     )
   }
@@ -109,47 +114,45 @@ export default class MainMapContainer extends Component {
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     )
   }
-  getVenues = async (cityName, s, w, n, e) => {
-    console.log(cityName)
-    const TIMEOUT = 25
-    const TYPES = ['node', 'way', 'relation']
-    const amenities = ['pub', 'bar', 'cafe', 'restaurant', 'fast_food', ]
-    const baseUrl = 'http://overpass-api.de/api/interpreter?data='
-    const queryStart = `[out:json][timeout:${TIMEOUT}];area[name="${cityName}"]["boundary"="administrative"];area._(if:t["admin_level"] == _.max(t["admin_level"]))->.s;(`
-    const queryMain = []
-    TYPES.map(type => amenities.map(amenity => {
-      queryMain.push(`${type}["amenity"="${amenity}"](area.s)`)
-    }))
-    TYPES.map(type => {
-      queryMain.push(`${type}["shop"](area.s)`)
-    })
-    const queryEnd = ';);out geom;'
-    const query = baseUrl + queryStart + queryMain.join(';') + queryEnd
-    const cacheItemName = `${cityName}-${query.length}`
-    let venues = await venuesCache.getItem(cacheItemName)
-    if(!venues || (venues.loading && venues.timeout && Date.now() > venues.timeout)) {
-      await venuesCache.setItem(cacheItemName, {loading: true, data: {}, timeout: Date.now() + (TIMEOUT + 5) * 1000})
-      console.log(query)
-      try {
-        const data = await (await fetch(query)).json()
-        await venuesCache.setItem(cacheItemName, {loading: false, data})
-      } catch(error) {
-        console.log(error)
-        venuesCache.clearItem(cacheItemName)
-      }
-    }
-    venues = await venuesCache.getItem(cacheItemName)
-    if(venues.loading) return
-    console.log(venues.data.elements.length)
-    const osmObj = {
-      ...venues.data,
-      elements: venues.data.elements.filter(({lat, lon}) => {
-        return isInsideBbox({lat, lon}, {s, w, n, e})
-        //return isInsideBbox({lat, lon}, {s: s - 0.2, w: w - 0.2, n: n + 0.2, e: e + 0.2})
+  getVisibleVenues = async ({s, w, n, e}) => {
+    console.log("getVisibleVenues", Date.now())
+    await this.loadingWrapper(() => {
+      return new Promise(async (resolve) => {
+        const cities = await getVisibleCities({s, w, n, e})
+        console.log(cities)
+        if(!cities) return
+        let osmObj = {elements: []}
+        let waitingNb = cities.length
+        cities.map(async (city) => {
+          const cityVenues = await getCityVenues(city.name, s, w, n, e)
+          if(!cityVenues) return
+          console.log("cityVenues", city.name, cityVenues.elements.length)
+          osmObj.elements.push(...cityVenues.elements.filter(({lat, lon}) => {
+            return isInsideBbox({lat, lon}, {s, w, n, e})
+            //return isInsideBbox({lat, lon}, {s: s - 0.2, w: w - 0.2, n: n + 0.2, e: e + 0.2})
+          }))
+          waitingNb--
+          console.log(waitingNb)
+          if(waitingNb < cities.length) resolve()
+          this.setState({venues: osmtogeojson(osmObj)})
+        })
       })
-    }
-    console.log(osmObj.elements.length)
-    this.setState({venues: osmtogeojson(osmObj)})
+    })
+  }
+  loadingWrapper = async (func, timeout = 1500) => {
+    this.loading = true
+    const time = Date.now()
+    setTimeout(() => {
+      console.log("so?", this.loading, Date.now() - time)
+      if(this.loading && !this.state.loading) {
+        this.setState({loading: true})
+      }
+    }, timeout)
+    const result = await func.call()
+    this.loading = false
+    console.log("time", Date.now() - time)
+    if(!this.loading && this.state.loading) this.setState({loading: false})
+    return result
   }
   hideVenues = () => {
     this.setState({venues: null})

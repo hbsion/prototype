@@ -1,34 +1,30 @@
 import MapboxGL       from '@mapbox/react-native-mapbox-gl'
 import PropTypes    from 'prop-types'
 import React        from 'react'
-import {View, StyleSheet, Text, Button, Alert, TouchableOpacity} from 'react-native'
+import {View, StyleSheet, Text, TouchableOpacity} from 'react-native'
 import Config       from 'react-native-config'
 import KeepAwake    from 'react-native-keep-awake'
+import Spinner      from 'react-native-loading-spinner-overlay'
 import bearing      from '@turf/bearing'
 import distance     from '@turf/distance'
 import {point}      from '@turf/helpers'
+import throttle     from 'lodash/throttle'
 
-import citiesFr     from './citiesFr'
-import CitiesLayer  from './CitiesLayer'
-import fakeUsers    from './fakeUsers'
-import isInsideBbox from './isInsideBbox'
-import UsersLayer   from './UsersLayer'
 import VenuesLayer  from './VenuesLayer'
 import VenueDetails from './VenueDetails'
 
 MapboxGL.setAccessToken(Config.MAPBOX_KEY)
 
-const cities = citiesFr()
-const users = fakeUsers(cities)
 
 export default class MainMap extends React.Component {
   static propTypes = {
-    enterVenue: PropTypes.func.isRequired,
-    getVenues:  PropTypes.func.isRequired,
-    hideVenues: PropTypes.func.isRequired,
-    latitude:   PropTypes.number,
-    longitude:  PropTypes.number,
-    venues:     PropTypes.object,
+    enterVenue:       PropTypes.func.isRequired,
+    getVisibleVenues: PropTypes.func.isRequired,
+    hideVenues:       PropTypes.func.isRequired,
+    loading:          PropTypes.bool.isRequired,
+    latitude:         PropTypes.number,
+    longitude:        PropTypes.number,
+    venues:           PropTypes.object,
   }
   constructor(props) {
     super(props)
@@ -45,11 +41,11 @@ export default class MainMap extends React.Component {
     }
   }
   render() {
+    console.log("loading", this.props.loading)
     const { latitude, longitude, venues } = this.props
     const { center, fakeMode, zoom } = this.state
     const lat = fakeMode || !latitude ? this.fakeCenter.lat : latitude
     const lon = fakeMode || !longitude ? this.fakeCenter.lon : longitude
-    console.log(latitude, longitude)
     const userPoint = point([longitude, latitude])
     const centerPoint = point([center.lon, center.lat])
     return (
@@ -80,9 +76,6 @@ export default class MainMap extends React.Component {
                 </View>
               </MapboxGL.PointAnnotation>
             }
-            <CitiesLayer {...{cities}} />
-
-            <UsersLayer {...{users}} />
 
             <VenuesLayer
               {...{venues, styles}}
@@ -105,6 +98,16 @@ export default class MainMap extends React.Component {
           <Text>Longitude: {lon}</Text>
           <Text>{distance(userPoint, centerPoint)} {bearing(userPoint, centerPoint)}</Text>
         </View>
+        {this.props.loading &&
+          <View style={styles.spinner}>
+            <Spinner
+              animation="fade"
+              textContent={"Chargement..."}
+              textStyle={{color: '#FFF'}}
+              visible={true}
+            />
+          </View>
+        }
       </View>
     )
   }
@@ -114,13 +117,14 @@ export default class MainMap extends React.Component {
     const userLon = fakeMode ? center.lon : location.longitude
     return Math.abs(lat - userLat) < 0.0001 && Math.abs(lon - userLon) < 0.0001
   }
+  getVisibleVenues = throttle(this.props.getVisibleVenues, 2000)
   handleSelectVenue = (venue) => {
     console.log(venue)
     this.setState({selectedVenue: venue})
   }
   handleUserLocationUpdate = ({timestamp, coords}) => {
     const {speed, heading, accuracy, altitude, latitude, longitude} = coords
-    console.log({speed, heading, accuracy, altitude, latitude, longitude})
+    //console.log({speed, heading, accuracy, altitude, latitude, longitude})
     this.setState({
       location: {timestamp, speed, heading, accuracy, altitude, latitude, longitude},
     })
@@ -135,13 +139,7 @@ export default class MainMap extends React.Component {
       this.props.hideVenues()
       return
     }
-    const displayable = cities.features.filter(({geometry: {coordinates: [lon, lat]}}) => (
-      isInsideBbox({lat, lon}, {s: s - 0.2, w: w - 0.2, n: n + 0.2, e: e + 0.2})
-    ))
-    console.log(displayable)
-    if(displayable.length) {
-      this.props.getVenues(displayable[0].properties.name, s, w, n, e)
-    }
+    this.getVisibleVenues({s, w, n, e})
   }
 }
 
@@ -169,5 +167,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: 'lightblue',
     transform: [{ scale: 0.7 }],
+  },
+  spinner: {
+    flex: 1,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    top: 0,
   },
 })
