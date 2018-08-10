@@ -28,9 +28,7 @@ export default class MainMapContainer extends Component {
     super(props)
     this.state = {
       error:     null,
-      latitude:  undefined,
       loading:   false,
-      longitude: undefined,
       venues:    undefined,
     }
   }
@@ -39,7 +37,7 @@ export default class MainMapContainer extends Component {
   }
   render() {
     const { user } = this.props
-    const { latitude, loading, longitude } = this.state
+    const { loading } = this.state
     const venues = !this.state.venues ? null : {
       ...this.state.venues,
       features: this.state.venues.features.map((feature) => {
@@ -61,8 +59,6 @@ export default class MainMapContainer extends Component {
         enterVenue={this.enterVenue}
         getVisibleVenues={this.getVisibleVenues}
         hideVenues={this.hideVenues}
-        latitude={latitude}
-        longitude={longitude}
         userId={user._id}
         venues={venues}
         loading={loading}
@@ -78,9 +74,7 @@ export default class MainMapContainer extends Component {
           'message': 'Nous autorises-tu à accéder à ta localisation ?'
         }
       )
-      if (granted === true || granted === PermissionsAndroid.RESULTS.GRANTED) {
-        this.getPosition()
-      } else {
+      if (granted !== true && granted !== PermissionsAndroid.RESULTS.GRANTED) {
         Alert.alert("Permission not granted. The application may not work properly")
       }
     } catch (err) {
@@ -97,23 +91,6 @@ export default class MainMapContainer extends Component {
       }
     })
   }
-  getPosition = () => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        console.log("position", position)
-        this.setState({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          error: null,
-        })
-      },
-      (error) => {
-        this.setState({ error: error.message })
-        console.error(error.message)
-      },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
-    )
-  }
   getVisibleVenues = async ({s, w, n, e}) => {
     console.log("getVisibleVenues", Date.now())
     await this.loadingWrapper(() => {
@@ -129,7 +106,6 @@ export default class MainMapContainer extends Component {
           console.log("cityVenues", city.name, cityVenues.elements.length)
           osmObj.elements.push(...cityVenues.elements.filter(({lat, lon}) => {
             return isInsideBbox({lat, lon}, {s, w, n, e})
-            //return isInsideBbox({lat, lon}, {s: s - 0.2, w: w - 0.2, n: n + 0.2, e: e + 0.2})
           }))
           waitingNb--
           console.log(waitingNb)

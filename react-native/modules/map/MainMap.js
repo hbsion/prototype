@@ -15,6 +15,7 @@ import VenueDetails from './VenueDetails'
 
 MapboxGL.setAccessToken(Config.MAPBOX_KEY)
 
+const LYON = {lat: 45.7578, lon: 4.8351}
 
 export default class MainMap extends React.Component {
   static propTypes = {
@@ -22,28 +23,21 @@ export default class MainMap extends React.Component {
     getVisibleVenues: PropTypes.func.isRequired,
     hideVenues:       PropTypes.func.isRequired,
     loading:          PropTypes.bool.isRequired,
-    latitude:         PropTypes.number,
-    longitude:        PropTypes.number,
     venues:           PropTypes.object,
   }
   constructor(props) {
     super(props)
-    this.fakeCenter = {
-      lat: 45.7578,
-      lon: 4.8351,
-    }
+    this.fakeCenter = {...LYON}
     this.state = {
-      center: {
-        lat: this.fakeCenter.lat,
-        lon: this.fakeCenter.lon,
-      },
+      center:   {...this.fakeCenter},
+      location: {...this.fakeCenter},
       fakeMode: true,
     }
   }
   render() {
     console.log("loading", this.props.loading)
-    const { latitude, longitude, venues } = this.props
-    const { center, fakeMode, zoom } = this.state
+    const { venues } = this.props
+    const { center, fakeMode, location: {latitude, longitude}, zoom } = this.state
     const lat = fakeMode || !latitude ? this.fakeCenter.lat : latitude
     const lon = fakeMode || !longitude ? this.fakeCenter.lon : longitude
     const userPoint = point([longitude, latitude])
