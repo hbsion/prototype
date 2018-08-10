@@ -1,20 +1,39 @@
-import React                 from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import PropTypes from 'prop-types'
+import React     from 'react'
+import { StyleSheet, View }  from 'react-native'
+import Spinner   from 'react-native-loading-spinner-overlay'
 
-export default function Disconnected() {
-
+function Loading({ color, visible }) {
   return (
     <View style={styles.container}>
-      <Text>Chargement...</Text>
+      <Spinner
+        animation="fade"
+        overlayColor={color}
+        textContent={"Chargement..."}
+        textStyle={{color: '#FFF'}}
+        visible={visible}
+      />
     </View>
   )
 }
 
+Loading.propTypes = {
+  color:   PropTypes.string,
+  visible: PropTypes.bool,
+}
+Loading.defaultProps = {
+  visible: true
+}
+
+export default Loading
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    top: 0,
   },
 })

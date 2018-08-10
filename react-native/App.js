@@ -3,12 +3,12 @@ import React                 from 'react'
 import { AppState, View }    from 'react-native'
 import Config                from 'react-native-config'
 import firebase              from 'react-native-firebase'
-import Spinner               from 'react-native-loading-spinner-overlay'
+
 import Meteor, {Accounts, withTracker} from 'react-native-meteor'
 import { NativeRouter, Route, Switch, BackButton, DeepLinking } from 'react-router-native'
 
-import Disconnected       from './components/Disconnected'
 import Home               from './components/Home'
+import Loading            from './components/Loading'
 import Chat               from './modules/chat/Chat'
 import ChallengeLayer     from './modules/challenge/ChallengeLayer'
 import DisplayUniqueCode  from './modules/challenge/DisplayUniqueCode'
@@ -26,16 +26,12 @@ Meteor.connect(`ws://${Config.SERVER_URL}/websocket`)
   Meteor.subscribe('chat.myRooms')
   console.log("refresh")
   return {
-    connected: Meteor.status().connected,
     isLoading: !handler.ready(),
     user,
   }
 })
-
-
 export default class App extends React.PureComponent {
   static propTypes = {
-    connected: PropTypes.bool.isRequired,
     isLoading: PropTypes.bool.isRequired,
     user:      PropTypes.object,
   }
@@ -67,7 +63,6 @@ export default class App extends React.PureComponent {
         console.log("notif displayed", notification)
       })
       this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
-        // Get the action triggered by the notification being opened
         const action = notificationOpen.action
         console.log("opened")
         console.log(action)
@@ -75,7 +70,6 @@ export default class App extends React.PureComponent {
       })
       this.notificationListener = firebase.notifications().onNotification(handleNotification)
     } catch (error) {
-      // User has rejected permissions
       console.log("rejected", error)
     }
     if(this.state.isLoading) {
@@ -93,22 +87,12 @@ export default class App extends React.PureComponent {
     this.notificationListener()
     this.notificationDisplayedListener()
   }
-
   render() {
-    const {connected, user} = this.props
+    const { user} = this.props
     const { isLoading } = this.state
     if (isLoading) return (
-      <View style={{ flex: 1 }}>
-        <Spinner
-          animation="fade"
-          overlayColor="#DF419A"
-          textContent={"Chargement..."}
-          textStyle={{color: '#FFF'}}
-          visible={true}
-        />
-      </View>
+      <Loading color="#DF419A" />
     )
-    if(!connected)    return <Disconnected {...{connected}} />
     if(!user)         return <SignIn />
     if(!user.venueId) return <Home {...{user}} />
     return (

@@ -4,12 +4,12 @@ import React        from 'react'
 import {View, StyleSheet, Text, TouchableOpacity} from 'react-native'
 import Config       from 'react-native-config'
 import KeepAwake    from 'react-native-keep-awake'
-import Spinner      from 'react-native-loading-spinner-overlay'
 import bearing      from '@turf/bearing'
 import distance     from '@turf/distance'
 import {point}      from '@turf/helpers'
 import throttle     from 'lodash/throttle'
 
+import Loading      from '/components/Loading'
 import VenuesLayer  from './VenuesLayer'
 import VenueDetails from './VenueDetails'
 
@@ -57,6 +57,8 @@ export default class MainMap extends React.Component {
             styleURL={MapboxGL.StyleURL.Street}
             zoomLevel={17}
             pitchEnabled={false}
+            compassEnabled={false}
+            rotateEnabled={false}
             centerCoordinate={[lon, lat]}
             showUserLocation={true}
             userTrackingMode={fakeMode ? MapboxGL.UserTrackingModes.None : MapboxGL.UserTrackingModes.FollowWithHeading}
@@ -98,16 +100,7 @@ export default class MainMap extends React.Component {
           <Text>Longitude: {lon}</Text>
           <Text>{distance(userPoint, centerPoint)} {bearing(userPoint, centerPoint)}</Text>
         </View>
-        {this.props.loading &&
-          <View style={styles.spinner}>
-            <Spinner
-              animation="fade"
-              textContent={"Chargement..."}
-              textStyle={{color: '#FFF'}}
-              visible={true}
-            />
-          </View>
-        }
+        <Loading visible={this.props.loading} />
       </View>
     )
   }

@@ -8,7 +8,6 @@ export default async (bbox) => {
     Object.entries(await citiesCache.getAll()) || []
   ).filter(([key]) => key.indexOf('cities') === 0)
     .map(([key, value]) => value)
-  console.log("bboxes", bboxes)
   const bboxesCache = bboxes.filter(({value: {bbox: {s, w, n, e}}}) => {
     const height = Math.abs(bbox.n - bbox.s)
     const width = Math.abs(bbox.e - bbox.w)
