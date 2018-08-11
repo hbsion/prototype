@@ -36,10 +36,10 @@ export default new ValidatedMethod({
       const nearUsers = Meteor.users.find({
         venueId: {$in: nearVenuesIds},
         _id:     {$ne: user._id},
-      })
+      }, {fields: {venueId: 1}})
       console.log(nearUsers.count())
       nearUsers.forEach(nearUser => {
-        createAmbassadorChallenge(user._id, nearUser._id)
+        createAmbassadorChallenge(user, nearUser)
       })
     } else {
       cancelAllAmbassadorChallenges(user._id)

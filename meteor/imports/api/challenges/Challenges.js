@@ -2,24 +2,45 @@ import {Mongo}      from 'meteor/mongo'
 import {Random}     from 'meteor/random'
 import SimpleSchema from 'simpl-schema'
 
-import stateFromDates          from './stateFromDates'
-import challengeAcceptedNotif  from './notifications/challengeAccepted'
-import challengeCancelledNotif from './notifications/challengeCancelled'
-import challengeStartedNotif   from './notifications/challengeStarted'
+import accept         from './accept'
+import cancel         from './cancel'
+import decline        from './decline'
+import stateFromDates from './stateFromDates'
 
 export const Challenges = new Mongo.Collection('challenges')
 
 const Participant = new SimpleSchema({
   userId:     {type: String, regEx: SimpleSchema.RegEx.Id},
-  role:       {type: String, allowedValues: ['moving', 'unmoving']},
+  cost:       {type: Number, min: 0, defaultValue: 0},
+  reward:     {type: Number, min: 0, defaultValue: 0},
+  venueId:    {type: String, regEx: SimpleSchema.RegEx.Id},
   subrole:    {type: String, optional: true},
   acceptedAt: {type: Date, optional: true},
   declinedAt: {type: Date, optional: true},
+  role:       {
+    type: String,
+    allowedValues: ['moving', 'unmoving'],
+    optional: true,
+    // autoValue() {
+    //   this.unset()
+    //   const destinationVenueId = this.parentField()
+    //   const currentVenueId = this.siblingField('venueId')
+    //   if(!destinationVenueId.isSet || !currentVenueId.isSet) return
+    //   const value = (
+    //     destinationVenueId.value.venueId === currentVenueId.value ?
+    //       'unmoving' :
+    //       'moving'
+    //   )
+    //   if(this.isInsert) return value
+    //   if(this.isUpsert) return {$setOnInsert: value}
+    // }
+  },
 })
 
 Challenges.schema = new SimpleSchema({
   players:     Array,
   'players.$': Participant,
+  venueId:     {type: String, regEx: SimpleSchema.RegEx.Id},
   cancelledAt: {type: Date, optional: true},
   declinedAt:  {type: Date, optional: true},
   finishedAt:  {type: Date, optional: true},
@@ -35,6 +56,7 @@ Challenges.schema = new SimpleSchema({
   updatedAt: {
     type: Date,
     autoValue: function() {
+      console.log(this.field('venueId').value)
       return new Date()
     }
   },
@@ -53,98 +75,24 @@ Challenges.deny({
 })
 
 Challenges.privateFields = {
-  players:     1,
   cancelledAt: 1,
+  createdAt:   1,
   declinedAt:  1,
   finishedAt:  1,
+  'players.cost':   1,
+  'players.reward': 1,
+  'players.role':   1,
   startedAt:   1,
-  createdAt:   1,
+  venueId:     1,
 }
-
 Challenges.playerOneFields = {
   validationCode: 1,
 }
 
 Challenges.helpers({
-  accept(userId) {
-    const state = this.state()
-    if(state === 'finished')  throw new Meteor.Error("CHALLENGE_IS_FINISHED")
-    if(state === 'cancelled') throw new Meteor.Error("CHALLENGE_IS_CANCELLED")
-    if(state !== 'waiting') return
-    let accepted = true
-    let found = false
-    this.players.forEach(p => {
-      if(p.userId === userId) {
-        found = true
-        return
-      }
-      if(p.declinedAt || !p.acceptedAt) {
-        accepted = false
-      }
-    })
-    if(!found) return
-    const startedAt = accepted ? new Date() : undefined
-    Challenges.update({
-      _id: this._id,
-      'players.userId': userId,
-    }, {
-      $set: {
-        'players.$.acceptedAt': new Date(),
-        startedAt,
-      }
-    })
-    this.startedAt = startedAt
-    if(this.startedAt) {
-      challengeStartedNotif(this)
-    } else {
-      challengeAcceptedNotif({
-        challengeId: this._id,
-        query: {
-          $in: this.players.filter(p => !p.userId == userId).map(p => p._id)
-        },
-        userId,
-      })
-    }
-  },
-  cancel(userId) {
-    const cancelledAt = new Date()
-    const res = Challenges.update({
-      _id:         thid._id,
-      players:     {$elemMatch: {userId}},
-      cancelledAt: {$exists: false},
-      declinedAt:  {$exists: false},
-      finishedAt:  {$exists: false},
-    }, {
-      $set: {cancelledAt}
-    })
-    console.log(res)
-    this.cancelledAt = cancelledAt
-
-    challengeCancelledNotif({
-      challengeId: this._id,
-      query: {
-        $in: this.players.filter(p => p.startedAt && !p.userId == userId).map(p => p._id)
-      }
-    })
-  },
-  decline(userId) {
-    const state = this.state()
-    if(state === 'started') throw new Meteor.Error('CHALLENGE_HAS_STARTED')
-    if(state !== 'waiting') return
-    let found = false
-    if(!this.players.filter(p => p.userId === userId).length) return
-    const declinedAt = new Date()
-    Challenges.update({
-      _id: this._id,
-      'players.userId': userId,
-    }, {
-      $set: {
-        'players.$.declinedAt': new Date(),
-        declinedAt,
-      }
-    })
-    this.declinedAt = declinedAt
-  },
+  accept,
+  cancel,
+  decline,
   isValidatingUser(userId) {
     return this.players.findIndex((p) => p.userId === userId) === 1
   },
@@ -158,6 +106,13 @@ Challenges.helpers({
       $set: {
         finishedAt: new Date()
       }
+    })
+    this.players.forEach(({cost, reward, userId}) => {
+      console.log("reward", reward)
+      if(!reward) return
+      Meteor.users.update(userId, {
+        $inc: {zyms: reward - cost}
+      })
     })
   }
 })

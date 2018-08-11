@@ -14,7 +14,7 @@ import UserList      from './UserList'
   const startedChallenge = Meteor.collection('challenges').findOne()
   Meteor.subscribe('users.insideVenue', venueId)
   const user  = Meteor.user()
-  const users = Meteor.collection('users').find({venueId, _id: {$ne: user._id}})
+  const users = user && Meteor.collection('users').find({venueId, _id: {$ne: user._id}})
     .map((obj) => {
       const room = Meteor.collection('chat_rooms').findOne({
         userIds: {$all: [obj._id, user._id], $size: 2}
@@ -29,8 +29,8 @@ import UserList      from './UserList'
       return { ...obj, newMessages: newMessages.length }
     })
   return {
-    ambassadorMode: user.ambassadorMode,
-    isAmbassador:   user.isAmbassador,
+    ambassadorMode: user && user.ambassadorMode,
+    isAmbassador:   user && user.isAmbassador,
     startedChallenge,
     users,
     venueId,

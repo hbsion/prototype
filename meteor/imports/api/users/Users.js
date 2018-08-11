@@ -53,6 +53,7 @@ Schemas.User = new SimpleSchema({
   "emails.$":          {type: Object},
   "emails.$.address":  {type: String, regEx: SimpleSchema.RegEx.Email},
   "emails.$.verified": {type: Boolean},
+  zyms:                {type: Number, defaultValue: 0, min: 0},
   ethAddress:          {type: String,  optional: true},
   landingPageUserId:   {type: String,  optional: true},
   referringToken:      {type: String,  optional: true},
@@ -89,6 +90,7 @@ Meteor.users.privateFields = {
   ambassadorMode: 1,
   isAmbassador:   1,
   venueId:        1,
+  zyms:           1,
 }
 
 Meteor.users.findOneByEmail = (address, options) => Meteor.users.findOne(

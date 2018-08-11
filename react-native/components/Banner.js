@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types'
-import React from 'react'
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native'
+import React     from 'react'
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native'
+import Meteor, {withTracker} from 'react-native-meteor'
 
-
+@withTracker(() => {
+  const user = Meteor.user()
+  return {
+    zyms: user && user.zyms,
+  }
+})
 export default class Banner extends React.Component {
   static propTypes = {
     zyms: PropTypes.number.isRequired,
