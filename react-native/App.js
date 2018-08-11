@@ -90,9 +90,9 @@ export default class App extends React.PureComponent {
   render() {
     const { user} = this.props
     const { isLoading } = this.state
-    if (isLoading) return (
-      <Loading color="#DF419A" />
-    )
+    // if (isLoading) return (
+    //   <Loading color="#DF419A" />
+    // )
     if(!user)         return <SignIn />
     if(!user.venueId) return <Home {...{user}} />
     return (
