@@ -8,7 +8,7 @@ export default (user) => {
     players: {
       $elemMatch: {
         userId: user._id,
-        role:   'unmoving',
+        moving: false,
       }
     }
   }, {fields: {}})

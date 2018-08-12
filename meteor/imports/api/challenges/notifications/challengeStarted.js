@@ -5,11 +5,11 @@ export default ({_id, players}) => {
     const otherPlayer = players[(idx + 1) % 2]
     const username = Meteor.users.findOne(player.userId).username || "Maria"
     let body
-    console.log(player.role, otherPlayer.role)
-    if(player.role === 'moving') {
+    console.log(player.moving, otherPlayer.moving)
+    if(player.moving) {
       body = `Tu dois trouver ${username} !`
     } else {
-      if(otherPlayer.role === 'moving') {
+      if(otherPlayer.moving) {
         body = `${username} va essayer de te trouver !`
       } else {
         body = `${username} est dans le même établissement que toi !`
@@ -19,7 +19,6 @@ export default ({_id, players}) => {
       body,
       data:    {
         challengeId: _id,
-        role:        player.role,
       },
       groupBy: 'challenge',
       query:   player.userId,

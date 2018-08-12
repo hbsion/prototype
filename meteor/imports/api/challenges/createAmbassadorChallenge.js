@@ -10,13 +10,13 @@ export default (ambassador, user) => {
       {players: {
         $elemMatch: {
           userId:  ambassador._id,
-          role:    'unmoving',
-          subrole: 'ambassador',
+          moving:  false,
+          role: 'ambassador',
         }
       }},
       {players: {
         $elemMatch: {
-          role:   'moving',
+          moving: true,
           userId: user._id,
         }
       }},
@@ -31,12 +31,14 @@ export default (ambassador, user) => {
     players: [
       {
         acceptedAt: new Date(),
+        moving:     false,
         reward:     2,
-        subrole:    'ambassador',
+        role:       'ambassador',
         userId:     ambassador._id,
         venueId:    ambassador.venueId,
       },
       {
+        moving:  true,
         reward:  20,
         userId:  user._id,
         venueId: user.venueId,

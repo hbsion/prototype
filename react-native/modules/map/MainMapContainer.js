@@ -8,21 +8,26 @@ import getCityVenues    from './helpers/getCityVenues'
 import getVisibleCities from './helpers/getVisibleCities'
 import isInsideBbox     from './helpers/isInsideBbox'
 import venuesCache      from '/modules/cache/venues'
+import Challenges       from '/modules/challenge/Challenges'
 import MainMap          from './MainMap'
 
 
 @withTracker((...props) => {
   Meteor.subscribe('venues.count')
   const venues = Meteor.collection('venues').find({})
+  const startedChallenge = Challenges.findOne()
+  const challengeVenue = startedChallenge && startedChallenge.getVenue()
   return {
     ...props,
+    challengeDestination: challengeVenue && challengeVenue.location,
     venues,
   }
 })
 export default class MainMapContainer extends Component {
   static propTypes = {
-    user:   PropTypes.object,
-    venues: PropTypes.array,
+    challengeDestination: PropTypes.object,
+    user:                 PropTypes.object,
+    venues:               PropTypes.array,
   }
   constructor(props) {
     super(props)
@@ -36,7 +41,7 @@ export default class MainMapContainer extends Component {
     this.requestGeolocationPermission()
   }
   render() {
-    const { user } = this.props
+    const { challengeDestination, user } = this.props
     const { loading } = this.state
     const venues = !this.state.venues ? null : {
       ...this.state.venues,
@@ -56,12 +61,13 @@ export default class MainMapContainer extends Component {
     }
     return (
       <MainMap
+        challengeDestination={challengeDestination}
         enterVenue={this.enterVenue}
         getVisibleVenues={this.getVisibleVenues}
         hideVenues={this.hideVenues}
+        loading={loading}
         userId={user._id}
         venues={venues}
-        loading={loading}
       />
     )
   }

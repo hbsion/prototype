@@ -92,8 +92,14 @@ export default class InsideVenue extends React.Component {
       </View>
     )
   }
-  canFind = () => this.props.startedChallenge && !!this.props.startedChallenge.validationCode
-  canScan = () => this.props.isAmbassador && this.props.ambassadorMode
+  canFind = () => (
+    this.props.startedChallenge && !!this.props.startedChallenge.validationCode &&
+    this.props.startedChallenge.venueId === this.props.venueId
+  )
+  canScan = () => (
+    this.props.isAmbassador && this.props.ambassadorMode &&
+    this.props.startedChallenge
+  )
   found = () => {
     this.props.history.push('/show-qrcode')
   }

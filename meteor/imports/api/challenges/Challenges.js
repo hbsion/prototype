@@ -14,23 +14,17 @@ const Participant = new SimpleSchema({
   cost:       {type: Number, min: 0, defaultValue: 0},
   reward:     {type: Number, min: 0, defaultValue: 0},
   venueId:    {type: String, regEx: SimpleSchema.RegEx.Id},
-  subrole:    {type: String, optional: true},
+  role:       {type: String, optional: true},
   acceptedAt: {type: Date, optional: true},
   declinedAt: {type: Date, optional: true},
-  role:       {
-    type: String,
-    allowedValues: ['moving', 'unmoving'],
-    optional: true,
+  moving:       {
+    type: Boolean,
     // autoValue() {
     //   this.unset()
     //   const destinationVenueId = this.parentField()
     //   const currentVenueId = this.siblingField('venueId')
     //   if(!destinationVenueId.isSet || !currentVenueId.isSet) return
-    //   const value = (
-    //     destinationVenueId.value.venueId === currentVenueId.value ?
-    //       'unmoving' :
-    //       'moving'
-    //   )
+    //   const value = destinationVenueId.value.venueId !== currentVenueId.value
     //   if(this.isInsert) return value
     //   if(this.isUpsert) return {$setOnInsert: value}
     // }
@@ -81,7 +75,7 @@ Challenges.privateFields = {
   finishedAt:  1,
   'players.cost':   1,
   'players.reward': 1,
-  'players.role':   1,
+  'players.moving': 1,
   startedAt:   1,
   venueId:     1,
 }

@@ -2,10 +2,12 @@ import PropTypes      from 'prop-types'
 import React          from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import Meteor, {withTracker} from 'react-native-meteor'
+import Challenges from './Challenges'
 
 @withTracker(() => {
   Meteor.subscribe('challenges.started')
-  const startedChallenge = Meteor.collection('challenges').findOne()
+  const startedChallenge = Challenges.findOne()
+  console.log("startedChallenge", startedChallenge)
   const userId = Meteor.userId()
   const idx = startedChallenge && startedChallenge.players.findIndex(
     p => p.userId === userId

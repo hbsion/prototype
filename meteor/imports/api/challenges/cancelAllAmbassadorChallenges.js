@@ -7,8 +7,8 @@ export default (ambassadorId) => {
     finishedAt:  {$exists: false},
     players: {
       $elemMatch: {
-        userId:  ambassadorId,
-        subrole: 'ambassador'
+        userId: ambassadorId,
+        role:   'ambassador'
       }
     }
   }, {

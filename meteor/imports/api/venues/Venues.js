@@ -21,7 +21,6 @@ Venues.schema = new SimpleSchema({
   amenity:             {type: String, optional: true},
   cityId:              {type: String, optional: true},
   location:            {type: GeoJSON, optional: true},
-  lon:                 {type: Number, optional: true},
   mustUpdateOsm:       {type: Boolean, defaultValue: true},
   name:                {type: String, optional: true},
   'ISO3166-1':         {type: String, optional: true},
