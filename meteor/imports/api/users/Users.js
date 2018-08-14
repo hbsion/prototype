@@ -28,6 +28,11 @@ Schemas.UserProfile = new SimpleSchema({
     type: String,
     optional: true
   },
+  photo: {
+    type: Object,
+    blackbox: true,
+    optional: true,
+  },
   referrerToken: {
     type:     String,
     optional: true,
@@ -97,6 +102,22 @@ Meteor.users.findOneByEmail = (address, options) => Meteor.users.findOne(
   {emails: {$elemMatch: {address}}},
   options
 )
+const autoEditableFields = ['username']
+Meteor.users.allow({
+  update(userId, doc, fieldNames, modifier) {
+    if(userId !== doc._id) throw new Meteor.Error('USER_UNAUTHORIZED')
+    fieldNames.forEach(name => {
+      if(autoEditableFields.indexOf(name) === -1)
+        throw new Meteor.Error('FIELD_UNAUTHORIZED')
+    })
+    const allowedModifiers = JSON.stringify(Object.keys(modifier))
+    console.log(allowedModifiers, '["$set","$setOnInsert"]')
+    if(JSON.stringify(Object.keys(modifier)) != '["$set","$setOnInsert"]')
+      throw new Meteor.Error('AUTO_EDIT_ONLY_$SET')
+    console.log("ok")
+    return true
+  }
+})
 
 Meteor.users.helpers({
   email() {

@@ -15,7 +15,8 @@ import DisplayUniqueCode  from './modules/challenge/DisplayUniqueCode'
 import ScanQRCode         from './modules/challenge/ScanQRCode'
 import InsideVenue        from './modules/insideVenue/InsideVenue'
 import UserProfile        from './modules/insideVenue/UserProfile'
-import SignIn             from './modules/login/ui/SignIn'
+import SignIn             from './modules/user/ui/SignIn'
+import OwnProfile         from './modules/user/ui/OwnProfile'
 import handleNotification from './modules/notifications/handleNotification'
 
 Meteor.connect(`ws://${Config.SERVER_URL}/websocket`)
@@ -93,8 +94,9 @@ export default class App extends React.PureComponent {
     // if (isLoading) return (
     //   <Loading color="#DF419A" />
     // )
-    if(!user)         return <SignIn />
-    if(!user.venueId) return <Home {...{user}} />
+    if(!user)                                 return <SignIn />
+    if(!user.username || !user.profile.photo) return <OwnProfile />
+    if(!user.venueId)                         return <Home {...{user}} />
     return (
       <NativeRouter>
         <BackButton>

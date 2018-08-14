@@ -103,9 +103,10 @@ android {
         applicationId "com.enzym_proto"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 12
-        versionName "proto-0.12"
+        versionCode 13
+        versionName "proto-0.13"
         multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
         ndk {
             //abiFilters "armeabi-v7a", "x86"
         }
@@ -185,6 +186,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 
 
 dependencies {
+    compile project(':react-native-image-crop-picker')
     implementation project(':react-native-keep-awake')
     implementation project(':react-native-svg')
     implementation (project(':react-native-camera'))
