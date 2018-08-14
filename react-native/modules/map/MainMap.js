@@ -44,8 +44,14 @@ export default class MainMap extends React.Component {
     const lon = fakeMode || !longitude ? this.fakeCenter.lon : longitude
     const userPoint = fakeMode ? point([center.lon, center.lat]) : point([longitude, latitude])
     const challengePoint = challengeDestination && point(challengeDestination.coordinates)
+    const remainingDistance = challengePoint && distance(userPoint, challengePoint)
+    const displayableDistance = remainingDistance && (
+      remainingDistance > 1 ?
+        String(Math.round(remainingDistance * 10) / 10) + 'km' :
+        String(Math.round(remainingDistance * 100) * 10) + 'm'
+    )
     if(challengeDestination) {
-      const size = Math.min(0.05, distance(userPoint, challengePoint) / 2)
+      const size = Math.min(0.05, remainingDistance / 2)
       const arrowSize = Math.min(0.2, Math.max(0.2, size / 0.05) / 2)
       const rotate = 90 + bearing(userPoint, challengePoint)
       //const translateX = Math.round(594 / 2 * arrowSize)
@@ -109,6 +115,9 @@ export default class MainMap extends React.Component {
             enterVenue={this.props.enterVenue}
             venue={this.state.selectedVenue}
           />
+          {displayableDistance &&
+            <Text style={styles.challengeDistance}>{displayableDistance}</Text>
+          }
           <TouchableOpacity style={styles.button} onPress={() => this.setState({fakeMode: !fakeMode})}>
             <Text>{fakeMode ? 'Switch to Real Mode' : 'Switch to Fake mode'}</Text>
           </TouchableOpacity>
@@ -193,6 +202,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'green',
     transform: [{ scale: 0.7 }],
   },
+  challengeDistance: {
+    position: 'absolute',
+    bottom: 10,
+    padding: 10,
+    backgroundColor: 'white',
+  }
 })
 
 const layerStyles = MapboxGL.StyleSheet.create({

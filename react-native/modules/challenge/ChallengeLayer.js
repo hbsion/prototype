@@ -31,7 +31,6 @@ export default class ChallengeLayer extends React.PureComponent {
       <View style={styles.container}>
         <Text style={styles.countdown}>Countdown</Text>
         <Text style={styles.countdown}>Trouver {otherPlayer.userId}</Text>
-        <Text style={styles.countdown}>{startedChallenge.validationCode}</Text>
       </View>
     )
   }
