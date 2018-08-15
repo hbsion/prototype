@@ -2,9 +2,34 @@ import {Meteor} from 'meteor/meteor'
 import {Challenges} from '/imports/api/challenges/Challenges'
 import {Venues}     from '../Venues'
 
-Meteor.publish('venues.count', function() {
-  const fields = Venues.publicFields
-  return Venues.find({count: {$gte: 1}}, {fields})
+Meteor.publishComposite('venues.visibles', function() {
+  return {
+    find() {
+      return Venues.find(
+        {},
+        {fields: Venues.publicFields}
+      )
+    },
+    children: [{
+      find(venue) {
+        const startedChallenge = Challenges.findOne(
+          Challenges.queryStarted(this.userId)
+        )
+        const challengeUserIds = !startedChallenge ? [] : startedChallenge.players.map(p => p.userId)
+        const removeUserIds = [
+          this.userId,
+          ...challengeUserIds,
+        ]
+        return Meteor.users.find(
+          {$and: [
+            {venueId: venue._id},
+            {_id: {$nin: removeUserIds}}
+          ]},
+          {fields: Meteor.users.publicFields}
+        )
+      }
+    }]
+  }
 })
 
 Meteor.publishComposite('venues.inside', function() {

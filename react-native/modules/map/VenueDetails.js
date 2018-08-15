@@ -10,12 +10,6 @@ export default class VenuesDetails extends React.Component {
   }
   render() {
     const { canEnter, enterVenue, venue } = this.props
-    const fakeUserList = [
-      {username: 'Bob'},
-      {username: 'Mia'},
-      {username: 'Marty'},
-      {username: 'Elsa'},
-    ]
     if(!venue) return null
     return (
       <View style={styles.container}>
@@ -23,7 +17,7 @@ export default class VenuesDetails extends React.Component {
         {canEnter(venue.geometry.coordinates) &&
           <Button title="enter" onPress={enterVenue(venue)}>enter</Button>
         }
-        {fakeUserList.map(user => (
+        {venue.properties.users.map(user => (
           <Text key={user.username}>{user.username}</Text>
         ))}
       </View>
@@ -34,7 +28,7 @@ export default class VenuesDetails extends React.Component {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 30,
+    top: 50,
     bottom: 30,
     left: 0,
     width: 100,

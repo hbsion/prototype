@@ -7,7 +7,7 @@ export default function VenuesLayer({canEnter, selectVenue, venues}){
   const enterableOrNonEmptyVenues = {...venues, features: []}
   const otherVenues = {...venues, features: []}
   venues.features.forEach(venue => {
-    if(canEnter(venue.geometry.coordinates) || venue.properties.count) {
+    if(canEnter(venue.geometry.coordinates)) {
       enterableOrNonEmptyVenues.features.push(venue)
     } else {
       otherVenues.features.push(venue)
@@ -19,10 +19,22 @@ export default function VenuesLayer({canEnter, selectVenue, venues}){
       key="venues"
       shape={otherVenues}
       onPress={(event) => selectVenue(event.nativeEvent.payload)}>
+      <MapboxGL.SymbolLayer
+        id="venueCount"
+        style={layerStyles.venueCount}
+        filter={['>', 'count', 0]}
+      />
       <MapboxGL.CircleLayer
-        id="venuesPoints"
-        belowLayerID="userSinglePoint"
-        style={layerStyles.singlePoint}
+        id="emptyVenuePoints"
+        belowLayerID="venueCount"
+        style={layerStyles.emptyVenuePoints}
+        filter={['==', 'count', 0]}
+      />
+      <MapboxGL.CircleLayer
+        id="nonEmptyVenuePoints"
+        belowLayerID="venueCount"
+        style={layerStyles.nonEmptyVenuePoints}
+        filter={['>', 'count', 0]}
       />
     </MapboxGL.ShapeSource>,
     ...enterableOrNonEmptyVenues.features.map(({geometry, id, properties}) => {
@@ -95,12 +107,26 @@ const styles = StyleSheet.create({
   }
 })
 const layerStyles = MapboxGL.StyleSheet.create({
-  singlePoint: {
+  emptyVenuePoints: {
     circleColor: 'green',
     circleOpacity: 0.84,
     circleStrokeWidth: 2,
     circleStrokeColor: 'white',
     circleRadius: 5,
     circlePitchAlignment: 'map',
+  },
+  nonEmptyVenuePoints: {
+    circlePitchAlignment: 'map',
+    circleColor: 'green',
+    circleRadius: 8,
+    circleOpacity: 0.84,
+    circleStrokeWidth: 2,
+    circleStrokeColor: 'white',
+  },
+  venueCount: {
+    textField: '{count}',
+    textSize: 12,
+    textColor: 'white',
+    textPitchAlignment: 'map',
   },
 })

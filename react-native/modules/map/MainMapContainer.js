@@ -9,12 +9,13 @@ import getVisibleCities from './helpers/getVisibleCities'
 import isInsideBbox     from './helpers/isInsideBbox'
 import venuesCache      from '/modules/cache/venues'
 import Challenges       from '/modules/challenge/Challenges'
+import Venues           from '/modules/venue/Venues'
 import MainMap          from './MainMap'
 
 
 @withTracker((...props) => {
-  Meteor.subscribe('venues.count')
-  const venues = Meteor.collection('venues').find({})
+  Meteor.subscribe('venues.visibles')
+  const venues = Venues.find()
   const startedChallenge = Challenges.findOne()
   const challengeVenue = startedChallenge && startedChallenge.getVenue()
   return {
@@ -34,7 +35,7 @@ export default class MainMapContainer extends Component {
     this.state = {
       error:     null,
       loading:   false,
-      venues:    undefined,
+      venues:    null,
     }
   }
   async componentDidMount() {
@@ -42,23 +43,7 @@ export default class MainMapContainer extends Component {
   }
   render() {
     const { challengeDestination, user } = this.props
-    const { loading } = this.state
-    const venues = !this.state.venues ? null : {
-      ...this.state.venues,
-      features: this.state.venues.features.map((feature) => {
-        const {count} = this.props.venues.find(({osmId}) => osmId === feature.id.split('/')[1]) || {}
-        if(count) {
-          return {
-            ...feature,
-            properties: {
-              ...feature.properties,
-              count,
-            }
-          }
-        }
-        return feature
-      })
-    }
+    const { loading, venues } = this.state
     return (
       <MainMap
         challengeDestination={challengeDestination}
@@ -102,7 +87,6 @@ export default class MainMapContainer extends Component {
     await this.loadingWrapper(() => {
       return new Promise(async (resolve) => {
         const cities = await getVisibleCities({s, w, n, e})
-        console.log(cities)
         if(!cities) return
         let osmObj = {elements: []}
         let waitingNb = cities.length
@@ -114,9 +98,26 @@ export default class MainMapContainer extends Component {
             return isInsideBbox({lat, lon}, {s, w, n, e})
           }))
           waitingNb--
-          console.log(waitingNb)
+          //console.log(waitingNb)
           if(waitingNb < cities.length) resolve()
-          this.setState({venues: osmtogeojson(osmObj)})
+          const osmVenues = osmtogeojson(osmObj)
+          const mergedVenues = {
+            ...osmVenues,
+            features: osmVenues.features.map((feature) => {
+              const [osmType, osmId] = feature.id.split('/')
+              const venue = Venues.findOne({osmId: parseInt(osmId), osmType})
+              const users = venue ? venue.getUsers() : []
+              return {
+                ...feature,
+                properties: {
+                  ...feature.properties,
+                  count: users.length,
+                  users,
+                }
+              }
+            })
+          }
+          this.setState({venues: mergedVenues})
         })
       })
     })
@@ -125,14 +126,14 @@ export default class MainMapContainer extends Component {
     this.loading = true
     const time = Date.now()
     setTimeout(() => {
-      console.log("so?", this.loading, Date.now() - time)
+      //console.log("so?", this.loading, Date.now() - time)
       if(this.loading && !this.state.loading) {
         this.setState({loading: true})
       }
     }, timeout)
     const result = await func.call()
     this.loading = false
-    console.log("time", Date.now() - time)
+    //console.log("time", Date.now() - time)
     if(!this.loading && this.state.loading) this.setState({loading: false})
     return result
   }

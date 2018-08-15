@@ -51,8 +51,9 @@ Venues.deny({
 })
 
 Venues.publicFields = {
-  count: 1,
-  osmId: 1,
+  count:    1,
+  osmId:    1,
+  osmType:  1,
 }
 
 Venues.helpers({

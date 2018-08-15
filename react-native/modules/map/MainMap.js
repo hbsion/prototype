@@ -100,7 +100,9 @@ export default class MainMap extends React.Component {
               id="arrowShapeSource"
               shape={arrowFeatureCollection}
               images={{ arrow: arrowIcon, assets: ['pin'] }}>
-              <MapboxGL.SymbolLayer id="arrowSymbol" style={layerStyles.icon} />
+              {challengeDestination &&
+                <MapboxGL.SymbolLayer id="arrowSymbol" style={layerStyles.icon} />
+              }
             </MapboxGL.ShapeSource>
 
             <VenuesLayer
