@@ -9,7 +9,7 @@ import bearing      from '@turf/bearing'
 import distance     from '@turf/distance'
 import {point}      from '@turf/helpers'
 
-import Loading      from '/components/Loading'
+import Loading      from '/modules/base/Loading'
 import arrowIcon    from '../challenge/arrow.png'
 import VenuesLayer  from './VenuesLayer'
 import VenueDetails from './VenueDetails'
@@ -71,63 +71,57 @@ export default class MainMap extends React.Component {
     return (
       <View style={styles.container}>
         <KeepAwake />
-        <View style={{flex: 0.9}}>
-          <MapboxGL.MapView
-            ref={ref => this.mapView = ref}
-            styleURL={MapboxGL.StyleURL.Street}
-            zoomLevel={17}
-            pitchEnabled={false} compassEnabled={false} rotateEnabled={false}
-            centerCoordinate={[lon, lat]}
-            showUserLocation={true}
-            userTrackingMode={fakeMode ? MapboxGL.UserTrackingModes.None : MapboxGL.UserTrackingModes.FollowWithHeading}
-            onRegionDidChange={this.handleRegionDidChange}
-            onUserLocationUpdate={this.handleUserLocationUpdate}
-            onPress={() => this.handleSelectVenue(null)}
-            style={styles.container}
-          >
-            {fakeMode &&
-              <MapboxGL.PointAnnotation
-                key="me"
-                id="me"
-                coordinate={[center.lon, center.lat]}
-              >
-                <View style={styles.meAnnotationContainer}>
-                  <View style={styles.me} />
-                </View>
-              </MapboxGL.PointAnnotation>
-            }
-            <MapboxGL.ShapeSource
-              id="arrowShapeSource"
-              shape={arrowFeatureCollection}
-              images={{ arrow: arrowIcon, assets: ['pin'] }}>
-              {challengeDestination &&
-                <MapboxGL.SymbolLayer id="arrowSymbol" style={layerStyles.icon} />
-              }
-            </MapboxGL.ShapeSource>
-
-            <VenuesLayer
-              {...{venues, styles}}
-              canEnter={this.canEnter}
-              selectVenue={this.handleSelectVenue}
-            />
-
-          </MapboxGL.MapView>
-          <VenueDetails
-            canEnter={this.canEnter}
-            enterVenue={this.props.enterVenue}
-            venue={this.state.selectedVenue}
-          />
-          {displayableDistance &&
-            <Text style={styles.challengeDistance}>{displayableDistance}</Text>
+        <MapboxGL.MapView
+          ref={ref => this.mapView = ref}
+          styleURL={MapboxGL.StyleURL.Street}
+          zoomLevel={17}
+          pitchEnabled={false} compassEnabled={false} rotateEnabled={false}
+          centerCoordinate={[lon, lat]}
+          showUserLocation={true}
+          userTrackingMode={fakeMode ? MapboxGL.UserTrackingModes.None : MapboxGL.UserTrackingModes.FollowWithHeading}
+          onRegionDidChange={this.handleRegionDidChange}
+          onUserLocationUpdate={this.handleUserLocationUpdate}
+          onPress={() => this.handleSelectVenue(null)}
+          style={styles.container}
+        >
+          {fakeMode &&
+            <MapboxGL.PointAnnotation
+              key="me"
+              id="me"
+              coordinate={[center.lon, center.lat]}
+            >
+              <View style={styles.meAnnotationContainer}>
+                <View style={styles.me} />
+              </View>
+            </MapboxGL.PointAnnotation>
           }
-          <TouchableOpacity style={styles.button} onPress={() => this.setState({fakeMode: !fakeMode})}>
-            <Text>{fakeMode ? 'Switch to Real Mode' : 'Switch to Fake mode'}</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{flex: 0.1}}>
-          <Text>Latitude: {lat}</Text>
-          <Text>Longitude: {lon}</Text>
-        </View>
+          <MapboxGL.ShapeSource
+            id="arrowShapeSource"
+            shape={arrowFeatureCollection}
+            images={{ arrow: arrowIcon, assets: ['pin'] }}>
+            {challengeDestination &&
+              <MapboxGL.SymbolLayer id="arrowSymbol" style={layerStyles.icon} />
+            }
+          </MapboxGL.ShapeSource>
+
+          <VenuesLayer
+            {...{venues, styles}}
+            canEnter={this.canEnter}
+            selectVenue={this.handleSelectVenue}
+          />
+
+        </MapboxGL.MapView>
+        <VenueDetails
+          canEnter={this.canEnter}
+          enterVenue={this.props.enterVenue}
+          venue={this.state.selectedVenue}
+        />
+        {displayableDistance &&
+          <Text style={styles.challengeDistance}>{displayableDistance}</Text>
+        }
+        <TouchableOpacity style={styles.button} onPress={() => this.setState({fakeMode: !fakeMode})}>
+          <Text>{fakeMode ? 'Switch to Real Mode' : 'Switch to Fake mode'}</Text>
+        </TouchableOpacity>
         <Loading visible={this.props.loading} />
       </View>
     )
