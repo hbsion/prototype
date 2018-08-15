@@ -1,9 +1,10 @@
 import PropTypes             from 'prop-types'
 import React                 from 'react'
-import {View, StyleSheet, Text, Button, Modal, TouchableHighlight} from 'react-native'
+import {View, StyleSheet, Text, Button, Image, Modal, TouchableHighlight} from 'react-native'
 import Meteor, {withTracker} from 'react-native-meteor'
 import { Redirect, withRouter } from 'react-router-native'
 
+import Challenges    from 'modules/challenge/Challenges'
 import venuesCache   from '/modules/cache/venues'
 import EnteringModal from './EnteringModal'
 import UserList      from './UserList'
@@ -11,7 +12,8 @@ import UserList      from './UserList'
 @withTracker(({venueId}) => {
   console.log("inside")
   Meteor.subscribe('challenges.started')
-  const startedChallenge = Meteor.collection('challenges').findOne()
+  const startedChallenge = Challenges.findOne()
+  Meteor.subscribe('venues.inside')
   Meteor.subscribe('users.insideVenue', venueId)
   const user  = Meteor.user()
   const users = user && Meteor.collection('users').find({venueId, _id: {$ne: user._id}})
@@ -29,8 +31,9 @@ import UserList      from './UserList'
       return { ...obj, newMessages: newMessages.length }
     })
   return {
-    ambassadorMode: user && user.ambassadorMode,
-    isAmbassador:   user && user.isAmbassador,
+    ambassadorMode: !!user && user.ambassadorMode,
+    challengePhoto: startedChallenge && startedChallenge.getPhoto(),
+    isAmbassador:   !!user && user.isAmbassador,
     startedChallenge,
     users,
     venueId,
@@ -43,6 +46,7 @@ export default class InsideVenue extends React.Component {
     history:          PropTypes.object.isRequired,
     isAmbassador:     PropTypes.bool.isRequired,
     venueId:          PropTypes.string.isRequired,
+    challengePhoto:   PropTypes.string,
     startedChallenge: PropTypes.object,
     users:            PropTypes.array,
   }
@@ -61,7 +65,7 @@ export default class InsideVenue extends React.Component {
       })
   }
   render() {
-    const {ambassadorMode, isAmbassador, users} = this.props
+    const {ambassadorMode, challengePhoto, isAmbassador, users} = this.props
     const {venue, venueOsmId} = this.state
     if(!venueOsmId) {
       <Redirect to='/' />
@@ -83,6 +87,12 @@ export default class InsideVenue extends React.Component {
           isAmbassador={isAmbassador}
           isOpen={this.state.entering}
         />*/}
+        {this.isInsideChallengeVenue() && challengePhoto &&
+          <Image
+            source={{uri: challengePhoto}}
+            style={{width: 100, height: 100}}
+          />
+        }
         {this.canScan() && <Button title="scanner"  onPress={this.scan} />}
         {this.canFind() && <Button title="trouvé !" onPress={this.found} />}
         {isAmbassador &&
@@ -93,12 +103,14 @@ export default class InsideVenue extends React.Component {
     )
   }
   canFind = () => (
-    this.props.startedChallenge && !!this.props.startedChallenge.validationCode &&
-    this.props.startedChallenge.venueId === this.props.venueId
+    this.isInsideChallengeVenue() && !!this.props.startedChallenge.validationCode
   )
   canScan = () => (
     this.props.isAmbassador && this.props.ambassadorMode &&
     this.props.startedChallenge
+  )
+  isInsideChallengeVenue = () => (
+    this.props.startedChallenge && this.props.startedChallenge.venueId === this.props.venueId
   )
   found = () => {
     this.props.history.push('/show-qrcode')

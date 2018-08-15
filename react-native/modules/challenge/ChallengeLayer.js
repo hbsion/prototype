@@ -7,16 +7,14 @@ import Challenges from './Challenges'
 @withTracker(() => {
   Meteor.subscribe('challenges.started')
   const startedChallenge = Challenges.findOne()
-  console.log("startedChallenge", startedChallenge)
   const userId = Meteor.userId()
   const idx = startedChallenge && startedChallenge.players.findIndex(
     p => p.userId === userId
   )
   const player = startedChallenge && startedChallenge.players[idx]
-  const otherPlayer = startedChallenge && startedChallenge.players[(idx + 1) % 2]
-  console.log(otherPlayer)
+  const otherPlayerUser = startedChallenge && startedChallenge.otherPlayerUser()
   return {
-    otherPlayer,
+    otherPlayerUser,
     player,
     startedChallenge,
     userId,
@@ -24,13 +22,13 @@ import Challenges from './Challenges'
 })
 export default class ChallengeLayer extends React.PureComponent {
   render() {
-    const { otherPlayer, startedChallenge, userId } = this.props
+    const { otherPlayerUser, startedChallenge, userId } = this.props
 
     if(!startedChallenge) return null
     return (
       <View style={styles.container}>
         <Text style={styles.countdown}>Countdown</Text>
-        <Text style={styles.countdown}>Trouver {otherPlayer.userId}</Text>
+        <Text style={styles.countdown}>Trouver {otherPlayerUser.username}</Text>
       </View>
     )
   }

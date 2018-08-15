@@ -5,6 +5,8 @@ import { RNS3 }    from 'react-native-aws3'
 import Config      from 'react-native-config'
 import ImagePicker from 'react-native-image-crop-picker'
 import Meteor, {withTracker} from 'react-native-meteor'
+import uuidv4      from 'uuid/v4'
+import getPhotoUrl from '../getPhotoUrl'
 
 const { accessKey, bucket, keyPrefix, region, secretKey } = JSON.parse(Config.AWS_PHOTOS)
 const awsConfig = {
@@ -22,7 +24,7 @@ export default class OwnProfile extends React.Component {
     const { user } = props
     this.state = {
       photo: {
-        path: user.profile.photo && `https://${bucket}.s3-${region}.amazonaws.com/${keyPrefix}${user._id}.jpg`
+        path: user.profile.photo && getPhotoUrl(user.profile.photo.storageId)
       }
     }
   }
@@ -77,22 +79,23 @@ export default class OwnProfile extends React.Component {
     const userId = this.props.user._id
     console.log("image", Object.keys(image))
     this.setState({photo: image, photoSaved: false})
+    const storageId = uuidv4()
     const file = {
       uri:  image.path,
       type: image.mime,
-      name: `${userId}.jpg`,
+      name: `${storageId}.jpg`,
     }
     await RNS3.put(file, awsConfig).progress((e) => this.setState({photoSaving: e.percent}))
       .then((response) => {
         if (response.status !== 201)
           throw new Error("Failed to upload image to S3")
         console.log(response.body)
-        const {bucket, key, etag} = response.body.postResponse
+        const {etag} = response.body.postResponse
         if(response.body.postResponse.key) {
           Meteor.collection('users').update(
             this.props.user._id,
             {$set: {'profile.photo': {
-              bucket, etag, key
+              etag, storageId,
             }}}
           )
           this.setState({photoSaved: true})

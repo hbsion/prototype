@@ -30,8 +30,13 @@ Schemas.UserProfile = new SimpleSchema({
   },
   photo: {
     type: Object,
-    blackbox: true,
     optional: true,
+  },
+  'photo.storageId': {
+    type: String,
+  },
+  'photo.etag': {
+    type: String,
   },
   referrerToken: {
     type:     String,

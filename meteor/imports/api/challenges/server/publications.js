@@ -4,17 +4,7 @@ import {Challenges} from '../Challenges'
 
 Meteor.publishComposite('challenges.started', function() {
   if(!this.userId) return this.ready()
-  const query = {
-    cancelledAt: {$exists: false},
-    declinedAt:  {$exists: false},
-    finishedAt:  {$exists: false},
-    startedAt:   {$exists: true},
-    players: {
-      $elemMatch: {
-        userId: this.userId,
-      }
-    }
-  }
+  const query = Challenges.queryStarted(this.userId)
   return {
     find() {
       const challenge = Challenges.findOne(query, {fields: {players: 1}})
@@ -22,16 +12,20 @@ Meteor.publishComposite('challenges.started', function() {
         ...Challenges.privateFields,
         ...(challenge && challenge.isValidatingUser(this.userId) ? Challenges.playerOneFields : {})
       }
-      if(challenge) {
-        console.log(challenge)
-        console.log(fields)
-      }
       return Challenges.find(query, {fields})
     },
     children: [
       {
         find(challenge) {
           return Venues.find(challenge.venueId, {fields: {location: 1}})
+        }
+      },
+      {
+        find(challenge) {
+          return Meteor.users.find(
+            {_id: {$in: challenge.players.map(p => p.userId)}},
+            {fields: {username: 1}}
+          )
         }
       }
     ]

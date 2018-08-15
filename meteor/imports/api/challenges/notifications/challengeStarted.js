@@ -3,7 +3,7 @@ import sendToUsers from '/imports/modules/pushNotif/sendToUsers'
 export default ({_id, players}) => {
   players.forEach((player, idx) => {
     const otherPlayer = players[(idx + 1) % 2]
-    const username = Meteor.users.findOne(player.userId).username || "Maria"
+    const username = Meteor.users.findOne(player.userId).username
     let body
     console.log(player.moving, otherPlayer.moving)
     if(player.moving) {

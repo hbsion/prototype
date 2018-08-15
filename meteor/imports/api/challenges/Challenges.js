@@ -68,6 +68,22 @@ Challenges.deny({
   remove: () => true,
 })
 
+Challenges.queryStarted = (userId) => ({
+  cancelledAt: {$exists: false},
+  declinedAt:  {$exists: false},
+  finishedAt:  {$exists: false},
+  startedAt:   {$exists: true},
+  players: {
+    $elemMatch: {
+      userId,
+    }
+  }
+})
+Challenges.queryStartedAndInside = (userId, venueId) => ({
+  ...Challenges.queryStarted(userId),
+  venueId,
+})
+
 Challenges.privateFields = {
   cancelledAt: 1,
   createdAt:   1,
@@ -76,6 +92,7 @@ Challenges.privateFields = {
   'players.cost':   1,
   'players.reward': 1,
   'players.moving': 1,
+  'players.userId': 1,
   startedAt:   1,
   venueId:     1,
 }
