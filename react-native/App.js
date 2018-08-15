@@ -8,7 +8,7 @@ import Meteor, {Accounts, withTracker} from 'react-native-meteor'
 import { NativeRouter, Route, Switch, BackButton, DeepLinking } from 'react-router-native'
 
 import Home               from './components/Home'
-import Loading            from './components/Loading'
+import Landing            from './components/Landing'
 import Chat               from './modules/chat/Chat'
 import ChallengeLayer     from './modules/challenge/ChallengeLayer'
 import DisplayUniqueCode  from './modules/challenge/DisplayUniqueCode'
@@ -37,9 +37,16 @@ export default class App extends React.PureComponent {
     user:      PropTypes.object,
   }
   appState = AppState.currentState
-  state = {isLoading: true}
+  state = {minLoadTime: false}
 
   async componentDidMount() {
+    if(!this.state.minLoadTime) {
+      setTimeout(() => {
+        this.setState({
+          minLoadTime: true
+        })
+      }, 2000)
+    }
     this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(fcmToken => {
       this._saveFcmToken(fcmToken)
     })
@@ -73,13 +80,6 @@ export default class App extends React.PureComponent {
     } catch (error) {
       console.log("rejected", error)
     }
-    if(this.state.isLoading) {
-      setTimeout(() => {
-        this.setState({
-          isLoading: this.props.isLoading
-        })
-      }, 800)
-    }
   }
   componentWillUnmount() {
     Meteor.call('users.leaveVenue')
@@ -89,11 +89,11 @@ export default class App extends React.PureComponent {
     this.notificationDisplayedListener()
   }
   render() {
-    const { user} = this.props
-    const { isLoading } = this.state
-    // if (isLoading) return (
-    //   <Loading color="#DF419A" />
-    // )
+    const { isLoading, user } = this.props
+    const { minLoadTime } = this.state
+    if(isLoading || !minLoadTime) return (
+      <Landing />
+    )
     if(!user)                                 return <SignIn />
     if(!user.username || !user.profile.photo) return <OwnProfile />
     if(!user.venueId)                         return <Home {...{user}} />
